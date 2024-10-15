@@ -1,0 +1,3 @@
+export const LOGIN = '/login';
+export const PRIVATE = '/dashboard';
+export const LOGOUT = '/dashboard/logout';
