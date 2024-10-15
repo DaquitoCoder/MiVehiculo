@@ -1,5 +1,5 @@
 export default async function getFuelHistory() {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem('userData');
   if (!user) return [];
   const userId = JSON.parse(user).id;
   if (!userId) return [];
