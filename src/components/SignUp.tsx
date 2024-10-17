@@ -8,11 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Alert, AlertTitle } from './ui/alert';
+import { toast } from 'sonner';
+import { Toaster } from './ui/sonner';
 
 const countries = [
   { value: 'es', label: 'España', code: '+34' },
@@ -35,7 +36,7 @@ type SignUpInputs = {
   Contrasena2: string;
   Telefono: string;
   FotoPerfil: string;
-  FotoPerfil2: File;
+  FotoPerfil2: FileList;
   TipoUsuario: string;
   FechaRegistro: string;
   Activo: boolean;
@@ -44,88 +45,99 @@ type SignUpInputs = {
 export default function SignUp() {
   const [country, setCountry] = useState('');
   const [phone, setPhone] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm<SignUpInputs>();
+  const { register, handleSubmit, reset } = useForm<SignUpInputs>();
 
-  const [apiErrors, setApiErrors] = useState<string[]>([]);
-  const [apiSuccess, setApiSuccess] = useState<string[]>([]);
+  const uploadFile = async (file: File) => {
+    setIsUploading(true);
+    setUploadError(null);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(
+        'http://204.48.27.211:5000/api/file/?tipo_entidad=default',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.IdArchivo;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setUploadError('Error uploading file. Please try again.');
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     data.Telefono = `${country}${phone}`;
     data.TipoUsuario = 'Normal';
     data.FechaRegistro = new Date().toISOString();
     data.Activo = true;
-    data.FotoPerfil = '';
 
-    if (data.Contrasena !== data.Contrasena2) {
-      setApiErrors(['Las contraseñas no coinciden']);
-      return;
-    }
+    if (data.FotoPerfil2) {
+      const fileId = await uploadFile(data.FotoPerfil2.item(0) as File);
 
-    try {
-      const response = await fetch(
-        'http://204.48.27.211:5000/api/auth/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+      if (fileId) {
+        data.FotoPerfil = fileId.toString();
+
+        if (data.Contrasena !== data.Contrasena2) {
+          toast.error('Las contraseñas no coinciden');
+          return;
         }
-      );
 
-      if (response.ok) {
-        const result = await response.json();
-        setApiSuccess([
-          'ID ' + result.IdUsuario + ' Usuario creado correctamente',
-        ]); // Manejar la respuesta exitosa
-
-        if (result.IdUsuario) {
-          const responseImg = await fetch(
-            `http://204.48.27.211:5000/api/file/?user_id=${result.IdUsuario}&tipo_entidad=default`,
+        try {
+          const response = await fetch(
+            'http://204.48.27.211:5000/api/auth/register',
             {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({
-                user_id: result.IdUsuario,
-                tipo_entidad: 'default',
-                file: data.FotoPerfil2,
-              }),
+              body: JSON.stringify(data),
             }
           );
 
-          if (responseImg.ok) {
-            const resultImg = await responseImg.json();
+          if (response.ok) {
+            const result = await response.json();
 
-            console.log('resultImg', resultImg);
+            if (result?.detail) {
+              toast.success(result.detail);
+              reset();
+            } else {
+              toast.success('Usuario registrado correctamente');
+            }
+          } else {
+            // Si la API responde con un error, procesamos el cuerpo
+            const errorData = await response.json();
+
+            if (errorData?.detail) {
+              toast.error(errorData.detail);
+            } else {
+              toast.error('Error al procesar la petición.');
+            }
           }
-        }
-
-        setApiErrors([]); // Limpiar errores previos
-      } else {
-        // Si la API responde con un error, procesamos el cuerpo
-        const errorData = await response.json();
-
-        if (errorData?.detail) {
-          setApiErrors([errorData.detail]);
-        } else {
-          setApiErrors(['Ocurrió un error desconocido.']);
+        } catch (error) {
+          console.error('Error al hacer la petición:', error);
+          toast.error('Error al procesar la petición.');
         }
       }
-    } catch (error) {
-      console.error('Error al hacer la petición:', error);
-      setApiErrors(['Error de conexión o servidor.']);
     }
   };
 
   return (
     <div className='min-h-screen bg-gray-100 flex flex-col'>
+      <Toaster position='bottom-right' />
       <header className='bg-blue-500 text-white p-4 flex justify-between items-center'>
         <div className='flex items-center'>
           <Mail className='mr-2 h-6 w-6' />
@@ -146,18 +158,6 @@ export default function SignUp() {
             <span className='text-gray-500 text-4xl'>Logo</span>
           </div>
           <div className='w-full md:w-1/2 p-8'>
-            {apiSuccess.length > 0 && (
-              <Alert variant='default' className='mb-6'>
-                <AlertCircle className='h-4 w-4' />
-                <AlertTitle>{apiSuccess}</AlertTitle>
-              </Alert>
-            )}
-            {apiErrors.length > 0 && (
-              <Alert variant='destructive' className='mb-6'>
-                <AlertCircle className='h-4 w-4' />
-                <AlertTitle>{apiErrors}</AlertTitle>
-              </Alert>
-            )}
             <h2 className='text-2xl font-bold mb-6 text-center'>Registrarse</h2>
             <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
               <div>

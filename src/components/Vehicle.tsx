@@ -119,14 +119,22 @@ export default function VehicleDetail() {
           </div>
           <Bell className='text-gray-500 cursor-pointer' />
         </div>
-        <div className='grid grid-cols-1 gap-6 mb-6'>
+        <div className='header'>
+          <h1 className='text-4xl mb-4 text-white font-bold text-center bg-blue-500 rounded-md'>
+            {vehicle.Placa}
+          </h1>
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
           <Card>
-            <h1 className='text-4xl mb-4 text-white font-bold text-center bg-blue-500 rounded-md'>
-              {vehicle.Placa}
-            </h1>
             <CardContent className='p-4 md:p-6'>
-              <div className='flex w-full h-80 justify-center mb-4'>
-                <img src={vehicle.urlFoto} alt='Foto del vehículo' />
+              <div className='flex justify-center mb-4'>
+                <div className='relative w-full max-w-md aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden'>
+                  <img
+                    src={vehicle.urlFoto}
+                    alt={`Foto de ${vehicle.Placa}`}
+                    className='absolute inset-0 w-full h-full object-cover'
+                  />
+                </div>
               </div>
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                 <div>
@@ -138,13 +146,8 @@ export default function VehicleDetail() {
                   <p>{vehicle.Modelo}</p>
                 </div>
                 <div>
-                  <p className='font-semibold mb-1'>Color:</p>
-                  <input
-                    type='color'
-                    value={vehicle.Color}
-                    disabled
-                    className='w-12 h-8'
-                  />
+                  <p className='font-semibold'>Color:</p>
+                  <p>{vehicle.Color}</p>
                 </div>
                 <div>
                   <p className='font-semibold'>Número de chasis:</p>
@@ -162,6 +165,7 @@ export default function VehicleDetail() {
                   <p className='font-semibold'>Kilometraje actual:</p>
                   <p>{vehicle.KilometrajeActual} km</p>
                 </div>
+                <div></div>
                 <div>
                   <Link
                     to={`/dashboard/management/vehicle/${vehicle.Placa}/preventive-maintenance`}

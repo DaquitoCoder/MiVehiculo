@@ -5,6 +5,17 @@ import { Bell, Menu, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './ui/alert-dialog';
+import { toast, Toaster } from 'sonner';
 
 type Vehicle = {
   id: number;
@@ -23,13 +34,13 @@ type Vehicle = {
 };
 
 export default function Dashboard() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const loader = useLoaderData() as { vehicles: Vehicle[] };
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentVehicle, setCurrentVehicle] = useState<string | null>(null);
 
-  const loader = useLoaderData();
-
-  useEffect(() => {
-    setVehicles(loader as Vehicle[]);
-  }, [loader]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(
+    loader.vehicles as Vehicle[]
+  );
 
   const [filter, setFilter] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,9 +67,47 @@ export default function Dashboard() {
     navigate('/dashboard/management/vehicle/' + id);
   };
 
-  const handleDeleteVehicle = (id: string) => {
-    // setVehicles(vehicles.filter((vehicle) => vehicle.id !== id));
-    console.log('Delete vehicle', id);
+  const openDeleteDialog = (id: string) => {
+    setIsDeleteModalOpen(true);
+    setCurrentVehicle(id);
+  };
+
+  const closeDeleteDialog = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const deleteVehicleCard = async () => {
+    setIsDeleteModalOpen(false);
+
+    if (!currentVehicle) return;
+
+    try {
+      const response = await fetch(
+        `http://204.48.27.211:5000/api/vehicle/${currentVehicle}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+          },
+        }
+      );
+
+      if (response.ok) {
+        setVehicles((prev) =>
+          prev.filter((vehicle) => vehicle.Placa !== currentVehicle)
+        );
+        toast.success('Vehículo eliminado correctamente');
+        setCurrentVehicle(null);
+        closeDeleteDialog();
+      } else {
+        toast.error('Hubo un error al eliminar el vehículo');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Hubo un error al eliminar el vehículo');
+      return;
+    }
   };
 
   const toggleSidebar = () => {
@@ -72,6 +121,7 @@ export default function Dashboard() {
 
       {/* Main content */}
       <main className='flex-1 p-4 md:p-8 overflow-auto'>
+        <Toaster position='bottom-right' />
         <div className='flex justify-between items-center mb-6'>
           <div className='flex items-center'>
             <Button onClick={toggleSidebar} className='md:hidden mr-2'>
@@ -104,46 +154,78 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
-          {filteredVehicles.map((vehicle) => (
-            <Card key={vehicle.Placa} className='bg-white shadow-lg'>
-              <CardContent className='p-4 md:p-6'>
-                <div className='flex w-full h-80 justify-center mb-4'>
-                  <img src={vehicle.urlFoto} alt='Foto del vehículo' />
-                </div>
-                <h3 className='font-bold mb-2'>{vehicle.Placa}</h3>
-                <p className='text-gray-600 mb-1'>{vehicle.Marca}</p>
-                <p className='text-gray-600 mb-1'>{vehicle.Modelo}</p>
-                <p className='text-gray-600 mb-1'>
-                  Kilometraje: {vehicle.KilometrajeActual}
-                </p>
-                <p className='text-gray-600'>Color: {vehicle.Color}</p>
-              </CardContent>
-              <CardFooter className='bg-gray-50 p-4 flex md:flex-col flex-row justify-between  sm:space-y-0 gap-2'>
-                <Button
-                  onClick={() => handleDetailVehicle(vehicle.Placa)}
-                  variant='outline'
-                  className='w-full flex-grow text-blue-500 hover:bg-blue-50'
-                >
-                  Detalles
-                </Button>
-                <Button
-                  onClick={() => handleEditVehicle(vehicle.Placa)}
-                  variant='outline'
-                  className='w-full flex-grow text-blue-500 hover:bg-blue-50'
-                >
-                  Editar
-                </Button>
-                <Button
-                  onClick={() => handleDeleteVehicle(vehicle.Placa)}
-                  variant='outline'
-                  className='w-full flex-grow text-red-500 hover:bg-red-50'
-                >
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6'>
+          <AlertDialog
+            open={isDeleteModalOpen}
+            onOpenChange={setIsDeleteModalOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción no se puede deshacer. Esto eliminará
+                  permanentemente el vehículo con placa <b>{currentVehicle}</b>.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={closeDeleteDialog}>
+                  Cancelar
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={deleteVehicleCard}>
                   Eliminar
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          {filteredVehicles.length === 0 ? (
+            <div className='text-center w-full col-span-3'>
+              <p className='text-gray-600'>No se encontraron vehículos</p>
+            </div>
+          ) : (
+            filteredVehicles.map((vehicle) => (
+              <Card key={vehicle.Placa} className='bg-white shadow-lg'>
+                <CardContent className='p-4 md:p-6'>
+                  <div className='relative w-full max-w-md aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden mb-4'>
+                    <img
+                      src={vehicle.urlFoto}
+                      alt={`Foto de ${vehicle.Placa}`}
+                      className='absolute inset-0 w-full h-full object-cover'
+                    />
+                  </div>
+                  <h3 className='font-bold mb-2'>Placa: {vehicle.Placa}</h3>
+                  <p className='text-gray-600 mb-1'>Marca: {vehicle.Marca}</p>
+                  <p className='text-gray-600 mb-1'>Modelo: {vehicle.Modelo}</p>
+                  <p className='text-gray-600 mb-1'>
+                    Kilometraje: {vehicle.KilometrajeActual}
+                  </p>
+                  <p className='text-gray-600'>Color: {vehicle.Color}</p>
+                </CardContent>
+                <CardFooter className='bg-gray-50 p-4 flex md:flex-col flex-row justify-between  sm:space-y-0 gap-2'>
+                  <Button
+                    onClick={() => handleDetailVehicle(vehicle.Placa)}
+                    variant='outline'
+                    className='w-full flex-grow text-blue-500 hover:bg-blue-50'
+                  >
+                    Detalles
+                  </Button>
+                  <Button
+                    onClick={() => handleEditVehicle(vehicle.Placa)}
+                    variant='outline'
+                    className='w-full flex-grow text-blue-500 hover:bg-blue-50'
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    onClick={() => openDeleteDialog(vehicle.Placa)}
+                    variant='outline'
+                    className='w-full flex-grow text-red-500 hover:bg-red-50'
+                  >
+                    Eliminar
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))
+          )}
         </div>
       </main>
     </div>

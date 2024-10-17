@@ -42,20 +42,14 @@ const navItems: NavItem[] = [
     icon: <Wrench className='mx-2 w-5 h-5' />,
     children: [
       {
-        id: 'buscar',
-        label: 'Buscar',
-        icon: null,
-        href: '#',
-      },
-      {
         id: 'registrar',
-        label: 'Registrar',
+        label: 'Registrar servicio',
         icon: null,
         href: '/dashboard/management/services/add',
       },
       {
         id: 'historial',
-        label: 'Ver Historial',
+        label: 'Ver historial',
         icon: null,
         href: '/dashboard/management/services',
       },
@@ -154,8 +148,14 @@ const Sidebar = ({ sidebarOpen }: SidebarProps) => {
         sidebarOpen ? 'block' : 'hidden'
       } md:block w-full md:w-64 bg-blue-500 text-white p-6 overflow-y-auto`}
     >
-      <div className='mb-8'>
-        <div className='w-20 h-20 bg-white rounded-full mb-4'></div>
+      <div className='mb-8 text-center flex flex-col items-center'>
+        <div className='w-24 h-24 bg-white rounded-full mb-4'>
+          <img
+            src='https://randomuser.me/api/portraits/men/54.jpg'
+            alt='Foto de perfil'
+            className='w-full h-full object-cover rounded-full'
+          />
+        </div>
         <h2 className='text-xl font-bold'>{user?.nombre}</h2>
       </div>
       <nav>

@@ -15,5 +15,10 @@ export default async function getVehicles() {
     }
   );
   const json = await response.json();
-  return json;
+
+  const object = {
+    vehicles: json.detail ? {} : json,
+  };
+
+  return object;
 }

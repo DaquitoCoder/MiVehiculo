@@ -21,6 +21,8 @@ import getServiceLoader from './routes/loaders/getServiceLoader';
 import getServices from './routes/loaders/getServices';
 import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
+import { Suspense } from 'react';
+import RecoverPassword from './components/RecoverPassword';
 
 const router = createBrowserRouter([
   {
@@ -122,6 +124,9 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <LoginForm />,
+      },
+      {
         path: LOGIN,
         element: <LoginForm />,
       },
@@ -133,6 +138,10 @@ const router = createBrowserRouter([
         path: '/forgot-password',
         element: <ForgotPassword />,
       },
+      {
+        path: '/recover-password',
+        element: <RecoverPassword />,
+      },
     ],
   },
 ]);
@@ -140,7 +149,9 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <AuthContextProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <RouterProvider router={router} />
+      </Suspense>
     </AuthContextProvider>
   );
 };

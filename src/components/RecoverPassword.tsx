@@ -1,34 +1,71 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Mail } from 'lucide-react';
-import { toast } from 'sonner';
-import { Toaster } from './ui/sonner';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast, Toaster } from 'sonner';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-export default function ForgotPassword() {
-  const { register, handleSubmit } = useForm<FormData>();
+interface FormData {
+  password: string;
+  password2: string;
+}
+
+const RecoverPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  interface FormData {
-    email: string;
-  }
+  const { register, handleSubmit } = useForm<FormData>();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
 
   const onSubmit = async (data: FormData): Promise<void> => {
     setIsLoading(true);
+
+    if (data.password !== data.password2) {
+      toast.error('Las contraseñas no coinciden');
+      setIsLoading(false);
+      return;
+    }
+
+    const object = {
+      new_password: data.password,
+      token: token,
+    };
+
     try {
       // Reemplaza esta URL con la de tu API
-      await fetch('http://204.48.27.211:5000/api/auth/recover-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        'http://204.48.27.211:5000/api/auth/reset-password',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(object),
+        }
+      );
+
+      if (!response.ok) {
+        toast.error(
+          'Hubo un error al procesar tu solicitud. Vuelve a pedir el correo de recuperación'
+        );
+        return;
+      }
+
       toast.success('Se ha enviado un correo para recuperar tu contraseña');
-    } catch (error) {
-      console.log(error);
+      navigate('/login');
+    } catch (e) {
+      console.log(e);
       toast.error('Hubo un error al procesar tu solicitud');
     } finally {
       setIsLoading(false);
@@ -74,21 +111,33 @@ export default function ForgotPassword() {
             <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
               <div>
                 <label
-                  htmlFor='email'
+                  htmlFor='password'
                   className='block text-sm font-medium text-gray-700 mb-1'
                 >
-                  Correo:
+                  Contraseña:
                 </label>
                 <Input
-                  id='email'
-                  type='email'
-                  placeholder='Correo electrónico'
-                  {...register('email', {
-                    required: 'El correo es requerido',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Correo electrónico inválido',
-                    },
+                  id='password'
+                  type='password'
+                  placeholder='Contraseña'
+                  {...register('password', {
+                    required: 'La contraseña es requerida',
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor='password2'
+                  className='block text-sm font-medium text-gray-700 mb-1'
+                >
+                  Vuelva a escribir la contraseña:
+                </label>
+                <Input
+                  id='password2'
+                  type='password'
+                  placeholder='Contraseña'
+                  {...register('password2', {
+                    required: 'La contraseña es requerida',
                   })}
                 />
               </div>
@@ -101,4 +150,6 @@ export default function ForgotPassword() {
       </main>
     </div>
   );
-}
+};
+
+export default RecoverPassword;

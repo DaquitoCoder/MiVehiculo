@@ -31,7 +31,6 @@ export default function VehicleForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   console.log(uploadError);
-  // const authContext = useContext(AuthContext);
 
   const { id } = useParams();
   const loader = useLoaderData();
@@ -279,7 +278,7 @@ export default function VehicleForm() {
                     </label>
                     <Input
                       id='color'
-                      type='color'
+                      type='text'
                       required
                       {...register('Color', { required: true })}
                     />

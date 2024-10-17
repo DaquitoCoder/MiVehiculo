@@ -53,6 +53,7 @@ export default function AuthContextProvider({ children }: AuthProviderProps) {
   const logout = useCallback(() => {
     localStorage.removeItem(MY_AUTH_APP);
     localStorage.removeItem(USER_DATA_KEY);
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
   }, []);
