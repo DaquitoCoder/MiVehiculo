@@ -25,6 +25,13 @@ type Vehicle = {
   urlFoto: string;
 };
 
+interface VehicleLoader {
+  vehicle: Vehicle;
+  services: [];
+  fuelHistory: [];
+  error: string;
+}
+
 export default function VehicleForm() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -33,7 +40,7 @@ export default function VehicleForm() {
   console.log(uploadError);
 
   const { id } = useParams();
-  const loader = useLoaderData();
+  const loader = useLoaderData() as VehicleLoader;
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
@@ -46,7 +53,7 @@ export default function VehicleForm() {
 
   useEffect(() => {
     if (id) {
-      setVehicle(loader as Vehicle);
+      setVehicle(loader.vehicle as Vehicle);
       const fields: (keyof Vehicle)[] = [
         'Placa',
         'Tipo',

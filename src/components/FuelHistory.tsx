@@ -129,11 +129,15 @@ export default function FuelHistory() {
     }
   };
 
-  const filteredFuelRefills = fuelRefills.filter((refill) =>
-    Object.values(refill).some((value) =>
-      value.toString().toLowerCase().includes(filter.toLowerCase())
+  const filteredFuelRefills = fuelRefills
+    .filter((refill) =>
+      Object.values(refill).some((value) =>
+        value.toString().toLowerCase().includes(filter.toLowerCase())
+      )
     )
-  );
+    .sort((a, b) =>
+      a.IdRecargaCombustible! > b.IdRecargaCombustible! ? 1 : -1
+    );
 
   const handleAddFuelRefill = async (
     event: React.FormEvent<HTMLFormElement>
@@ -450,50 +454,53 @@ export default function FuelHistory() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredFuelRefills.length === 0 && (
+                    {filteredFuelRefills.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={8} className='text-center'>
                           No hay registros
                         </TableCell>
                       </TableRow>
+                    ) : (
+                      filteredFuelRefills.map((refill) => (
+                        <TableRow key={refill.IdRecargaCombustible}>
+                          <TableCell className='font-medium'>
+                            {refill.IdRecargaCombustible}
+                          </TableCell>
+                          <TableCell>{refill.IdVehiculo}</TableCell>
+                          <TableCell>{refill.Kilometraje}</TableCell>
+                          <TableCell>{refill.GalonesTanqueados}</TableCell>
+                          <TableCell>{refill.TipoCombustible}</TableCell>
+                          <TableCell>
+                            {Number(refill.CostoTotal) /
+                              Number(refill.GalonesTanqueados)}
+                          </TableCell>
+                          <TableCell>{refill.CostoTotal}</TableCell>
+                          <TableCell>{refill.EstacionServicio}</TableCell>
+                          <TableCell className='text-right'>
+                            <div className='flex justify-end space-x-1'>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                onClick={() => openEditModal(refill)}
+                              >
+                                <PencilIcon className='h-4 w-4' />
+                              </Button>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                onClick={() => {
+                                  openDeleteDialog(
+                                    refill.IdRecargaCombustible!
+                                  );
+                                }}
+                              >
+                                <TrashIcon className='h-4 w-4' />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
                     )}
-                    {filteredFuelRefills.map((refill) => (
-                      <TableRow key={refill.IdRecargaCombustible}>
-                        <TableCell className='font-medium'>
-                          {refill.IdRecargaCombustible}
-                        </TableCell>
-                        <TableCell>{refill.IdVehiculo}</TableCell>
-                        <TableCell>{refill.Kilometraje}</TableCell>
-                        <TableCell>{refill.GalonesTanqueados}</TableCell>
-                        <TableCell>{refill.TipoCombustible}</TableCell>
-                        <TableCell>
-                          {Number(refill.CostoTotal) /
-                            Number(refill.GalonesTanqueados)}
-                        </TableCell>
-                        <TableCell>{refill.CostoTotal}</TableCell>
-                        <TableCell>{refill.EstacionServicio}</TableCell>
-                        <TableCell className='text-right'>
-                          <div className='flex justify-end space-x-1'>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              onClick={() => openEditModal(refill)}
-                            >
-                              <PencilIcon className='h-4 w-4' />
-                            </Button>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              onClick={() => {
-                                openDeleteDialog(refill.IdRecargaCombustible!);
-                              }}
-                            >
-                              <TrashIcon className='h-4 w-4' />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
                   </TableBody>
                 </Table>
               </div>

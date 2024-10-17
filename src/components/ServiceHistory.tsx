@@ -66,11 +66,13 @@ export default function ServiceHistory() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const filteredServices = services.filter((service) =>
-    Object.values(service).some((value) =>
-      value.toString().toLowerCase().includes(filter.toLowerCase())
+  const filteredServices = services
+    .filter((service) =>
+      Object.values(service).some((value) =>
+        value.toString().toLowerCase().includes(filter.toLowerCase())
+      )
     )
-  );
+    .sort((a, b) => a.IdServicioRealizado - b.IdServicioRealizado);
 
   const openDeleteDialog = (serviceId: number) => {
     setServiceToDelete(serviceId);
@@ -146,6 +148,7 @@ export default function ServiceHistory() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className='w-[50px]'>Id</TableHead>
+                      <TableHead>Placa del vehículo</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Tipo servicio</TableHead>
                       <TableHead>Negocio</TableHead>
@@ -155,48 +158,50 @@ export default function ServiceHistory() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredServices.length === 0 && (
+                    {filteredServices.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className='text-center'>
                           No se encontraron servicios
                         </TableCell>
                       </TableRow>
-                    )}
-                    {filteredServices.map((service) => (
-                      <TableRow key={service.IdServicioRealizado}>
-                        <TableCell className='font-medium'>
-                          {service.IdServicioRealizado}
-                        </TableCell>
-                        <TableCell>{service.Fecha.split('T')[0]}</TableCell>
-                        <TableCell>{service.TipoServicio}</TableCell>
-                        <TableCell>{service.NombreNegocio}</TableCell>
-                        <TableCell>{service.ValorServicio}</TableCell>
-                        <TableCell>Ver</TableCell>
-                        <TableCell className='text-right'>
-                          <div className='flex justify-end space-x-2'>
-                            {/* <Button variant='ghost' size='icon'>
-                              <EyeIcon className='h-4 w-4' />
-                            </Button> */}
-                            <Link
-                              to={`/dashboard/management/services/edit/${service.IdServicioRealizado}`}
-                            >
-                              <Button variant='ghost' size='icon'>
-                                <PencilIcon className='h-4 w-4' />
+                    ) : (
+                      filteredServices.map((service) => (
+                        <TableRow key={service.IdServicioRealizado}>
+                          <TableCell className='font-medium'>
+                            {service.IdServicioRealizado}
+                          </TableCell>
+                          <TableCell>{service.PlacaVehiculo}</TableCell>
+                          <TableCell>{service.Fecha.split('T')[0]}</TableCell>
+                          <TableCell>{service.TipoServicio}</TableCell>
+                          <TableCell>{service.NombreNegocio}</TableCell>
+                          <TableCell>{service.ValorServicio}</TableCell>
+                          <TableCell>Ver</TableCell>
+                          <TableCell className='text-right'>
+                            <div className='flex justify-end space-x-2'>
+                              {/* <Button variant='ghost' size='icon'>
+                                <EyeIcon className='h-4 w-4' />
+                              </Button> */}
+                              <Link
+                                to={`/dashboard/management/services/edit/${service.IdServicioRealizado}`}
+                              >
+                                <Button variant='ghost' size='icon'>
+                                  <PencilIcon className='h-4 w-4' />
+                                </Button>
+                              </Link>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                onClick={() =>
+                                  openDeleteDialog(service.IdServicioRealizado)
+                                }
+                              >
+                                <TrashIcon className='h-4 w-4' />
                               </Button>
-                            </Link>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              onClick={() =>
-                                openDeleteDialog(service.IdServicioRealizado)
-                              }
-                            >
-                              <TrashIcon className='h-4 w-4' />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>

@@ -23,14 +23,23 @@ import {
 import Sidebar from './Sidebar';
 import { Link, useLoaderData } from 'react-router-dom';
 
-type Service = {
-  id: number;
-  date: string;
-  type: string;
-  business: string;
-  cost: number;
-};
+type ServiceType = 'Taller' | 'Parqueadero' | 'Lavadero';
 
+interface Service {
+  PlacaVehiculo: string;
+  TipoServicio: ServiceType;
+  NombreNegocio: string;
+  ValorServicio: number;
+  Duracion: number;
+  FotoServicio: FileList | number;
+  Comentarios: string;
+  Kilometraje: number;
+  Concepto: string;
+  Repuestos: string;
+  DescripcionFalla: string;
+  Diagnostico: string;
+  IdServicioRealizado?: number;
+}
 type Vehicle = {
   id: number;
   Placa: string;
@@ -67,37 +76,45 @@ type VehicleDetailLoaderData = {
   error: string | null;
 };
 
-const expensesData = [
-  { name: 'Ene', gastos: 4000 },
-  { name: 'Feb', gastos: 3000 },
-  { name: 'Mar', gastos: 2000 },
-  { name: 'Abr', gastos: 2780 },
-  { name: 'May', gastos: 1890 },
-  { name: 'Jun', gastos: 2390 },
-  { name: 'Jul', gastos: 3490 },
-];
-
 export default function VehicleDetail() {
   const loader = useLoaderData() as VehicleDetailLoaderData;
 
   const [vehicle, setVehicle] = useState<Vehicle>(loader.vehicle);
-  const [fuelHistory, setFuelHistory] = useState<FuelRefill[]>(
-    loader.fuelHistory
-  );
 
   const [currentServicePage, setCurrentServicePage] = useState(1);
   const [currentFuelPage, setCurrentFuelPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const itemsPerPage = 5;
   const totalServicePages = Math.ceil(loader.services.length / itemsPerPage);
-  const totalFuelPages = Math.ceil(fuelHistory.length / itemsPerPage);
+  const totalFuelPages = Math.ceil(loader.fuelHistory.length / itemsPerPage);
+
+  console.log(loader);
+
+  const expensesData = [
+    ...loader.fuelHistory.map((refill) => ({
+      name: new Date(refill.Fecha).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }),
+      gastos: parseFloat(refill.CostoTotal),
+    })),
+    ...loader.services.map((service) => ({
+      name: new Date(service.Duracion).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }),
+      gastos: service.ValorServicio,
+    })),
+  ];
 
   const paginatedServices = loader.services.slice(
     (currentServicePage - 1) * itemsPerPage,
     currentServicePage * itemsPerPage
   );
 
-  const paginatedFuelHistory = fuelHistory.slice(
+  const paginatedFuelHistory = loader.fuelHistory.slice(
     (currentFuelPage - 1) * itemsPerPage,
     currentFuelPage * itemsPerPage
   );
@@ -211,11 +228,16 @@ export default function VehicleDetail() {
                           </tr>
                         )}
                         {paginatedServices.map((service) => (
-                          <tr key={service.id} className='border-b'>
-                            <td className='py-2'>{service.date}</td>
-                            <td className='py-2'>{service.type}</td>
-                            <td className='py-2'>{service.business}</td>
-                            <td className='py-2'>${service.cost}</td>
+                          <tr
+                            key={service.IdServicioRealizado}
+                            className='border-b'
+                          >
+                            <td className='py-2'>
+                              {new Date(service.Duracion).toLocaleDateString()}
+                            </td>
+                            <td className='py-2'>{service.TipoServicio}</td>
+                            <td className='py-2'>{service.NombreNegocio}</td>
+                            <td className='py-2'>${service.ValorServicio}</td>
                             <td className='py-2'>
                               <Button variant='link' className='p-0'>
                                 Ver
@@ -291,28 +313,33 @@ export default function VehicleDetail() {
                         </tr>
                       </thead>
                       <tbody>
-                        {fuelHistory.length === 0 && (
+                        {paginatedFuelHistory.length === 0 ? (
                           <tr>
                             <td colSpan={6} className='text-center py-2'>
                               No hay recargas de combustible registradas
                             </td>
                           </tr>
+                        ) : (
+                          paginatedFuelHistory.map((refill) => (
+                            <tr
+                              key={refill.IdRecargaCombustible}
+                              className='border-b'
+                            >
+                              <td className='py-2'>
+                                {new Date(refill.Fecha).toLocaleDateString()}
+                              </td>
+                              <td className='py-2'>{refill.Kilometraje}</td>
+                              <td className='py-2'>
+                                {refill.GalonesTanqueados}
+                              </td>
+                              <td className='py-2'>${refill.PrecioGalon}</td>
+                              <td className='py-2'>${refill.CostoTotal}</td>
+                              <td className='py-2'>
+                                {refill.EstacionServicio}
+                              </td>
+                            </tr>
+                          ))
                         )}
-                        {paginatedFuelHistory.map((refill) => (
-                          <tr
-                            key={refill.IdRecargaCombustible}
-                            className='border-b'
-                          >
-                            <td className='py-2'>
-                              {new Date(refill.Fecha).toLocaleDateString()}
-                            </td>
-                            <td className='py-2'>{refill.Kilometraje}</td>
-                            <td className='py-2'>{refill.GalonesTanqueados}</td>
-                            <td className='py-2'>${refill.PrecioGalon}</td>
-                            <td className='py-2'>${refill.CostoTotal}</td>
-                            <td className='py-2'>{refill.EstacionServicio}</td>
-                          </tr>
-                        ))}
                       </tbody>
                     </table>
                   </div>

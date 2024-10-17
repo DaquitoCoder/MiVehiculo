@@ -19,7 +19,7 @@ import { useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Toaster } from './ui/sonner';
 
-type ServiceType = 'taller' | 'parqueadero' | 'lavadero';
+type ServiceType = 'Taller' | 'Parqueadero' | 'Lavadero';
 
 interface VehicleService {
   PlacaVehiculo: string;
@@ -71,7 +71,7 @@ export default function VehicleServiceForm() {
 
   const { control, handleSubmit, watch, reset } = useForm<VehicleService>({
     defaultValues: {
-      TipoServicio: 'taller',
+      TipoServicio: 'Taller',
       PlacaVehiculo: '',
       NombreNegocio: '',
       ValorServicio: 0,
@@ -295,7 +295,7 @@ export default function VehicleServiceForm() {
                 />
               </div>
 
-              {serviceType === 'taller' && (
+              {serviceType === 'Taller' && (
                 <>
                   <div>
                     <Label htmlFor='Kilometraje'>Kilometraje</Label>
