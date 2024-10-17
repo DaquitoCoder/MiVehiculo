@@ -27,14 +27,15 @@ interface VehicleService {
   NombreNegocio: string;
   ValorServicio: number;
   Duracion: number;
-  FotoServicio: FileList | number;
+  FotoServicio: FileList;
   Comentarios: string;
   Kilometraje: number;
   Concepto: string;
   Repuestos: string;
   DescripcionFalla: string;
   Diagnostico: string;
-  IdServicioRealizado?: number;
+  IdServicioRealizado: number;
+  Fecha: string;
 }
 
 type Vehicle = {

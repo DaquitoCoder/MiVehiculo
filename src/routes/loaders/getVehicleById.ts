@@ -29,9 +29,22 @@ export default async function getVehicleById(vehicleId: string) {
 
   const jsonFuelHistory = await responseFuelHistory.json();
 
+  const responseServices = await fetch(
+    `http://204.48.27.211:5000/api/vehicles/${vehicleId}/services_performed`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+      },
+    }
+  );
+
+  const jsonServices = await responseServices.json();
+
   const object = {
     vehicle: json.detail ? {} : json,
-    services: [],
+    services: jsonServices.detail ? [] : jsonServices,
     fuelHistory: jsonFuelHistory.detail ? [] : jsonFuelHistory,
     error: json.detail || null,
   };

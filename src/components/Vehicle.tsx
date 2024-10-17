@@ -39,6 +39,7 @@ interface Service {
   DescripcionFalla: string;
   Diagnostico: string;
   IdServicioRealizado?: number;
+  Fecha: string;
 }
 type Vehicle = {
   id: number;
@@ -88,26 +89,39 @@ export default function VehicleDetail() {
   const totalServicePages = Math.ceil(loader.services.length / itemsPerPage);
   const totalFuelPages = Math.ceil(loader.fuelHistory.length / itemsPerPage);
 
-  console.log(loader);
+  type ExpenseData = {
+    name: string;
+    gastos: number;
+  };
 
-  const expensesData = [
-    ...loader.fuelHistory.map((refill) => ({
+  const expensesData: ExpenseData[] = loader.fuelHistory
+    .map((refill) => ({
       name: new Date(refill.Fecha).toLocaleDateString('es-ES', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
       }),
       gastos: parseFloat(refill.CostoTotal),
-    })),
-    ...loader.services.map((service) => ({
-      name: new Date(service.Duracion).toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }),
-      gastos: service.ValorServicio,
-    })),
-  ];
+    }))
+    .concat(
+      loader.services.map((service) => ({
+        name: new Date(service.Fecha).toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
+        gastos: service.ValorServicio,
+      }))
+    )
+    .reduce<ExpenseData[]>((acc, curr) => {
+      const existing = acc.find((item) => item.name === curr.name);
+      if (existing) {
+        existing.gastos += curr.gastos;
+      } else {
+        acc.push(curr);
+      }
+      return acc;
+    }, []);
 
   const paginatedServices = loader.services.slice(
     (currentServicePage - 1) * itemsPerPage,
@@ -233,7 +247,7 @@ export default function VehicleDetail() {
                             className='border-b'
                           >
                             <td className='py-2'>
-                              {new Date(service.Duracion).toLocaleDateString()}
+                              {new Date(service.Fecha).toLocaleDateString()}
                             </td>
                             <td className='py-2'>{service.TipoServicio}</td>
                             <td className='py-2'>{service.NombreNegocio}</td>
