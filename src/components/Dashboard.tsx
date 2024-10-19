@@ -45,13 +45,14 @@ export default function Dashboard() {
   const [filter, setFilter] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const filteredVehicles = vehicles
-    ? vehicles.filter(
-        (vehicle) =>
-          vehicle.Placa.toLowerCase().includes(filter.toLowerCase()) ||
-          vehicle.Modelo.toLowerCase().includes(filter.toLowerCase())
-      )
-    : [];
+  const filteredVehicles =
+    vehicles.length > 0
+      ? vehicles.filter(
+          (vehicle) =>
+            vehicle.Placa.toLowerCase().includes(filter.toLowerCase()) ||
+            vehicle.Modelo.toLowerCase().includes(filter.toLowerCase())
+        )
+      : [];
 
   const navigate = useNavigate();
 
@@ -178,9 +179,9 @@ export default function Dashboard() {
             </AlertDialogContent>
           </AlertDialog>
           {filteredVehicles.length === 0 ? (
-            <div className='text-center w-full col-span-3'>
-              <p className='text-gray-600'>No se encontraron vehículos</p>
-            </div>
+            <p className='text-gray-600 text-center w-full col-span-4'>
+              No se encontraron vehículos
+            </p>
           ) : (
             filteredVehicles.map((vehicle) => (
               <Card key={vehicle.Placa} className='bg-white shadow-lg'>
