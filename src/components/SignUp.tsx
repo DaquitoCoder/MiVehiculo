@@ -85,7 +85,8 @@ export default function SignUp() {
     data.FechaRegistro = new Date().toISOString();
     data.Activo = true;
 
-    if (data.FotoPerfil2) {
+    if (data.FotoPerfil2.length > 0) {
+      console.log(data.FotoPerfil2);
       const fileId = await uploadFile(data.FotoPerfil2.item(0) as File);
 
       if (fileId) {
@@ -131,6 +132,49 @@ export default function SignUp() {
           console.error('Error al hacer la petición:', error);
           toast.error('Error al procesar la petición.');
         }
+      }
+    } else {
+      data.FotoPerfil = '';
+
+      if (data.Contrasena !== data.Contrasena2) {
+        toast.error('Las contraseñas no coinciden');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          'http://204.48.27.211:5000/api/auth/register',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+
+          if (result?.detail) {
+            toast.success(result.detail);
+            reset();
+          } else {
+            toast.success('Usuario registrado correctamente');
+          }
+        } else {
+          // Si la API responde con un error, procesamos el cuerpo
+          const errorData = await response.json();
+
+          if (errorData?.detail) {
+            toast.error(errorData.detail);
+          } else {
+            toast.error('Error al procesar la petición.');
+          }
+        }
+      } catch (error) {
+        console.error('Error al hacer la petición:', error);
+        toast.error('Error al procesar la petición.');
       }
     }
   };
@@ -281,7 +325,7 @@ export default function SignUp() {
               <div className='flex items-center'>
                 <Checkbox id='accept' required />
                 <label htmlFor='accept' className='ml-2 text-sm text-gray-600'>
-                  Yo acepto los <a href='#'>Términos de uso</a> y
+                  Yo acepto los <a href='#'>Términos de uso</a> y{' '}
                   <a href='#'>Política de privacidad</a>
                 </label>
               </div>
