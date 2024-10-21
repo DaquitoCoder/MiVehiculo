@@ -157,7 +157,10 @@ const Sidebar = ({ sidebarOpen }: SidebarProps) => {
       <div className='mb-8 text-center flex flex-col items-center'>
         <div className='w-24 h-24 bg-white rounded-full mb-4'>
           <img
-            src={user?.foto_perfil}
+            src={
+              user?.foto_perfil ??
+              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541'
+            }
             alt='Foto de perfil'
             className='w-full h-full object-cover rounded-full'
           />

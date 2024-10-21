@@ -104,6 +104,10 @@ export default function EditProfile() {
       Contrasena: data.Contrasena ? data.Contrasena : loader.Contrasena,
       Telefono: data.Telefono ? data.Telefono : loader.Telefono,
       FotoPerfil: data.FotoPerfil ? data.FotoPerfil : '',
+      TipoUsuario: 'Normal',
+      FechaRegistro: loader.FechaRegistro,
+      Activo: loader.Activo,
+      IdRol: loader.IdRol,
     };
 
     if (data.FileFoto.length > 0) {
@@ -120,7 +124,7 @@ export default function EditProfile() {
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ' + localStorage.getItem('token') || '',
               },
-              body: JSON.stringify(data),
+              body: JSON.stringify(object),
             }
           );
 
@@ -146,7 +150,7 @@ export default function EditProfile() {
               'Content-Type': 'application/json',
               Authorization: 'Bearer ' + localStorage.getItem('token') || '',
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(object),
           }
         );
 
@@ -205,7 +209,10 @@ export default function EditProfile() {
           <div className='flex flex-col items-center'>
             <div className='w-32 h-32 bg-gray-200 rounded-full mb-4 overflow-hidden'>
               <img
-                src={user?.foto_perfil}
+                src={
+                  user?.foto_perfil ??
+                  'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541'
+                }
                 alt='Foto de perfil'
                 className='w-full h-full object-cover'
               />
@@ -233,117 +240,119 @@ export default function EditProfile() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          <div className='text-center'>
+            <p>
+              Usuario activo desde:{' '}
+              {new Date(loader.FechaRegistro).toLocaleDateString()}
+            </p>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-            <div className='text-center'>
-              <p>
-                Usuario activo desde:{' '}
-                {new Date(loader.FechaRegistro).toLocaleDateString()}
-              </p>
-            </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='col-span-2 mt-4'>
+                <div>
+                  <Label htmlFor='file'>Actualizar imagen de perfil</Label>
+                  <Input
+                    id='file'
+                    type='file'
+                    accept='image/*'
+                    {...register('FileFoto')}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor='nombre'>Nombre</Label>
+                <Input
+                  id='nombre'
+                  type='text'
+                  {...register('Nombre', {
+                    required: 'Este campo es requerido',
+                  })}
+                />
+                {errors.Email && (
+                  <p className='text-red-500 text-sm'>{errors.Email.message}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor='numDoc'>Número de Documento</Label>
+                <Input
+                  id='numDoc'
+                  {...register('NumeroDocumento', {
+                    required: 'Este campo es requerido',
+                  })}
+                />
+                {errors.NumeroDocumento && (
+                  <p className='text-red-500 text-sm'>
+                    {errors.NumeroDocumento.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor='email'>Email</Label>
+                <Input
+                  id='email'
+                  type='email'
+                  {...register('Email', {
+                    required: 'Este campo es requerido',
+                    pattern: { value: /^\S+@\S+$/i, message: 'Email inválido' },
+                  })}
+                />
+                {errors.Email && (
+                  <p className='text-red-500 text-sm'>{errors.Email.message}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor='telefono'>Teléfono</Label>
+                <Input
+                  id='telefono'
+                  {...register('Telefono', {
+                    pattern: {
+                      value: /^[0-9+]+$/,
+                      message: 'Ingrese solo números',
+                    },
+                  })}
+                />
+                {errors.Telefono && (
+                  <p className='text-red-500 text-sm'>
+                    {errors.Telefono.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor='password'>Contraseña</Label>
+                <Input
+                  id='password'
+                  type='password'
+                  {...register('Contrasena', {
+                    minLength: {
+                      value: 4,
+                      message: 'La contraseña debe tener al menos 4 caracteres',
+                    },
+                  })}
+                />
+                {errors.Contrasena && (
+                  <p className='text-red-500 text-sm'>
+                    {errors.Contrasena.message}
+                  </p>
+                )}
+              </div>
 
-            <div>
-              <Label htmlFor='file'>Actualizar imagen de perfil</Label>
-              <Input
-                id='file'
-                type='file'
-                accept='image/*'
-                {...register('FileFoto')}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor='nombre'>Nombre</Label>
-              <Input
-                id='nombre'
-                type='text'
-                {...register('Nombre', {
-                  required: 'Este campo es requerido',
-                })}
-              />
-              {errors.Email && (
-                <p className='text-red-500 text-sm'>{errors.Email.message}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor='numDoc'>Número de Documento</Label>
-              <Input
-                id='numDoc'
-                {...register('NumeroDocumento', {
-                  required: 'Este campo es requerido',
-                })}
-              />
-              {errors.NumeroDocumento && (
-                <p className='text-red-500 text-sm'>
-                  {errors.NumeroDocumento.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor='email'>Email</Label>
-              <Input
-                id='email'
-                type='email'
-                {...register('Email', {
-                  required: 'Este campo es requerido',
-                  pattern: { value: /^\S+@\S+$/i, message: 'Email inválido' },
-                })}
-              />
-              {errors.Email && (
-                <p className='text-red-500 text-sm'>{errors.Email.message}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor='telefono'>Teléfono</Label>
-              <Input
-                id='telefono'
-                {...register('Telefono', {
-                  pattern: {
-                    value: /^[0-9+]+$/,
-                    message: 'Ingrese solo números',
-                  },
-                })}
-              />
-              {errors.Telefono && (
-                <p className='text-red-500 text-sm'>
-                  {errors.Telefono.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor='password'>Contraseña</Label>
-              <Input
-                id='password'
-                type='password'
-                {...register('Contrasena', {
-                  minLength: {
-                    value: 4,
-                    message: 'La contraseña debe tener al menos 4 caracteres',
-                  },
-                })}
-              />
-              {errors.Contrasena && (
-                <p className='text-red-500 text-sm'>
-                  {errors.Contrasena.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor='confirmPassword'>Confirme su contraseña</Label>
-              <Input
-                id='confirmPassword'
-                type='password'
-                {...register('confirmPassword', {
-                  validate: (value, formValues) =>
-                    value === formValues.Contrasena ||
-                    'Las contraseñas no coinciden',
-                })}
-              />
-              {errors.confirmPassword && (
-                <p className='text-red-500 text-sm'>
-                  {errors.confirmPassword.message}
-                </p>
-              )}
+              <div>
+                <Label htmlFor='confirmPassword'>Confirme su contraseña</Label>
+                <Input
+                  id='confirmPassword'
+                  type='password'
+                  {...register('confirmPassword', {
+                    validate: (value, formValues) =>
+                      value === formValues.Contrasena ||
+                      'Las contraseñas no coinciden',
+                  })}
+                />
+                {errors.confirmPassword && (
+                  <p className='text-red-500 text-sm'>
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
             </div>
             <Button type='submit' className='w-full'>
               Actualizar información

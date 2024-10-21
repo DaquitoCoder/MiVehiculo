@@ -31,7 +31,7 @@ export default async function getFuelHistory() {
 
   const object = {
     fuels: json.detail ? [] : json,
-    vehicles: jsonVehicles,
+    vehicles: jsonVehicles.detail ? [] : jsonVehicles,
     error: json.detail || null,
   };
 

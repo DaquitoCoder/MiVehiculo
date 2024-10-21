@@ -299,11 +299,20 @@ export default function FuelHistory() {
                           <SelectValue placeholder='PLACA' />
                         </SelectTrigger>
                         <SelectContent>
-                          {loader.vehicles.map((vehicle) => (
-                            <SelectItem key={vehicle.id} value={vehicle.Placa}>
-                              {vehicle.Placa}
+                          {loader.vehicles.length > 0 ? (
+                            loader.vehicles.map((vehicle) => (
+                              <SelectItem
+                                key={vehicle.id}
+                                value={vehicle.Placa}
+                              >
+                                {vehicle.Placa}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem disabled value=''>
+                              No hay vehículos disponibles
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -456,7 +465,7 @@ export default function FuelHistory() {
                   <TableBody>
                     {filteredFuelRefills.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className='text-center'>
+                        <TableCell colSpan={9} className='text-center'>
                           No hay registros
                         </TableCell>
                       </TableRow>
