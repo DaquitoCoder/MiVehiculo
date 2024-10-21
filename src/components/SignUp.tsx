@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { Mail } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Toaster } from './ui/sonner';
@@ -47,8 +47,6 @@ export default function SignUp() {
   const [phone, setPhone] = useState('');
 
   const { register, handleSubmit, reset } = useForm<SignUpInputs>();
-
-  const navigate = useNavigate();
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -106,8 +104,6 @@ export default function SignUp() {
           if (response.ok) {
             toast.success('Usuario registrado correctamente');
             reset();
-
-            
           } else {
             // Si la API responde con un error, procesamos el cuerpo
             const errorData = await response.json();
