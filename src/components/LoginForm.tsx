@@ -144,7 +144,7 @@ export default function LoginForm() {
                 <Input
                   id='password'
                   type='password'
-                  placeholder='Contraseña'
+                  placeholder='••••••••'
                   required
                   {...register('password', { required: true })}
                 />

@@ -61,8 +61,6 @@ interface VehicleServiceLoader {
 export default function VehicleServiceForm() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [initialData, setInitialData] = useState<VehicleService | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const loader = useLoaderData() as VehicleServiceLoader;
 
@@ -124,8 +122,6 @@ export default function VehicleServiceForm() {
   };
 
   const uploadFile = async (file: File) => {
-    setIsUploading(true);
-    setUploadError(null);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -145,10 +141,7 @@ export default function VehicleServiceForm() {
       return data.IdArchivo;
     } catch (error) {
       console.error('Error uploading file:', error);
-      setUploadError('Error uploading file. Please try again.');
       return null;
-    } finally {
-      setIsUploading(false);
     }
   };
 

@@ -119,7 +119,7 @@ const RecoverPassword = () => {
                 <Input
                   id='password'
                   type='password'
-                  placeholder='Contraseña'
+                  placeholder='••••••••'
                   {...register('password', {
                     required: 'La contraseña es requerida',
                   })}
@@ -135,7 +135,7 @@ const RecoverPassword = () => {
                 <Input
                   id='password2'
                   type='password'
-                  placeholder='Contraseña'
+                  placeholder='••••••••'
                   {...register('password2', {
                     required: 'La contraseña es requerida',
                   })}

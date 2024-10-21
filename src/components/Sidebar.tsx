@@ -68,10 +68,16 @@ const navItems: NavItem[] = [
     href: '#',
   },
   {
+    id: 'enlaces',
+    label: 'Enlaces de interés',
+    icon: <HelpCircle className='mx-2 w-5 h-5' />,
+    href: '/dashboard/management/useful-links',
+  },
+  {
     id: 'perfil',
     label: 'Perfil',
     icon: <User className='mx-2 w-5 h-5' />,
-    href: '#',
+    href: '/dashboard/management/profile',
   },
   {
     id: 'ayuda',
@@ -151,7 +157,7 @@ const Sidebar = ({ sidebarOpen }: SidebarProps) => {
       <div className='mb-8 text-center flex flex-col items-center'>
         <div className='w-24 h-24 bg-white rounded-full mb-4'>
           <img
-            src='https://randomuser.me/api/portraits/men/54.jpg'
+            src={user?.foto_perfil}
             alt='Foto de perfil'
             className='w-full h-full object-cover rounded-full'
           />

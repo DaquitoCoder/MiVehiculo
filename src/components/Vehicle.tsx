@@ -80,7 +80,7 @@ type VehicleDetailLoaderData = {
 export default function VehicleDetail() {
   const loader = useLoaderData() as VehicleDetailLoaderData;
 
-  const [vehicle, setVehicle] = useState<Vehicle>(loader.vehicle);
+  const vehicle = loader.vehicle;
 
   const [currentServicePage, setCurrentServicePage] = useState(1);
   const [currentFuelPage, setCurrentFuelPage] = useState(1);

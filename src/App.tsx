@@ -23,6 +23,10 @@ import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
 import { Suspense } from 'react';
 import RecoverPassword from './components/RecoverPassword';
+import UsefulLinks from './components/InterestLink';
+import Profile from './components/Profile';
+import NotFound from './components/NotFound';
+import getUser from './routes/loaders/getUser';
 
 const router = createBrowserRouter([
   {
@@ -111,6 +115,19 @@ const router = createBrowserRouter([
           return getMaintenanceById(params.id);
         },
         element: <VehicleServiceForm />,
+      },
+      {
+        path: '/dashboard/management/useful-links',
+        element: <UsefulLinks />,
+      },
+      {
+        path: '/dashboard/management/profile',
+        loader: getUser,
+        element: <Profile />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
       },
       {
         path: LOGOUT,

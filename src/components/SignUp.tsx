@@ -45,14 +45,10 @@ type SignUpInputs = {
 export default function SignUp() {
   const [country, setCountry] = useState('');
   const [phone, setPhone] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const { register, handleSubmit, reset } = useForm<SignUpInputs>();
 
   const uploadFile = async (file: File) => {
-    setIsUploading(true);
-    setUploadError(null);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -72,10 +68,7 @@ export default function SignUp() {
       return data.IdArchivo;
     } catch (error) {
       console.error('Error uploading file:', error);
-      setUploadError('Error uploading file. Please try again.');
       return null;
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -86,7 +79,6 @@ export default function SignUp() {
     data.Activo = true;
 
     if (data.FotoPerfil2.length > 0) {
-      console.log(data.FotoPerfil2);
       const fileId = await uploadFile(data.FotoPerfil2.item(0) as File);
 
       if (fileId) {
@@ -289,7 +281,7 @@ export default function SignUp() {
                 <Input
                   id='password'
                   type='password'
-                  placeholder='Contraseña'
+                  placeholder='••••••••'
                   {...register('Contrasena', { required: true })}
                 />
               </div>
@@ -303,7 +295,7 @@ export default function SignUp() {
                 <Input
                   id='password2'
                   type='password'
-                  placeholder='Contraseña'
+                  placeholder='••••••••'
                   {...register('Contrasena2', { required: true })}
                 />
               </div>
@@ -318,7 +310,6 @@ export default function SignUp() {
                   id='picture'
                   type='file'
                   accept='image/*'
-                  placeholder='Contraseña'
                   {...register('FotoPerfil2')}
                 />
               </div>
