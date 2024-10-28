@@ -17,10 +17,22 @@ export default async function getDocuments() {
 
   const json = await response.json();
 
-  
+  const responseVehicles = await fetch(
+    `http://204.48.27.211:5000/api/vehicle/${userId}/vehicles`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+      },
+    }
+  );
+
+  const jsonVehicles = await responseVehicles.json();
 
   return {
     documents: json.detail ? [] : json,
+    vehicles: jsonVehicles.detail ? [] : jsonVehicles,
     error: json.detail || null,
   };
 }
