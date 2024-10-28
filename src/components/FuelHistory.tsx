@@ -412,16 +412,17 @@ export default function FuelHistory() {
                       </div>
                     </div>
                     <div className='grid grid-cols-2 gap-4'>
-                      <div>
+                        <div>
                         <Label htmlFor='galones'>Galones tanqueados</Label>
                         <Input
                           id='galones'
                           name='galones'
                           type='number'
+                          step='0.01'
                           placeholder='Galones tanqueados'
                           defaultValue={editingRefill?.GalonesTanqueados}
                         />
-                      </div>
+                        </div>
                       <div>
                         <Label htmlFor='estacion'>Estación</Label>
                         <Input

@@ -8,6 +8,13 @@ import Sidebar from './Sidebar';
 import { useForm } from 'react-hook-form';
 import { useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 type Vehicle = {
   Placa: string;
@@ -38,6 +45,43 @@ export default function VehicleForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   console.log(uploadError);
+
+  const claseOptions = [
+    'AUTOMOVIL',
+    'MOTOCICLETA',
+    'BUS',
+    'BUSETA',
+    'CAMION',
+    'CAMIONETA',
+    'CAMPERO',
+    'MICROBUS',
+    'TRACTOCAMION',
+    'MOTOCARRO',
+    'MOTOTRICICLO',
+    'CUATRIMOTO',
+    'REMOLQUE',
+    'SEMIREMOLQUE',
+    'VOLQUETA',
+    'SIN CLASE',
+    'MAQ. CONSTRUCCION O MINERA',
+    'CICLOMOTOR',
+    'TRICIMOTO',
+    'CUADRICICLO',
+  ];
+
+  const gasolinaOptions = [
+    'GASOLINA',
+    'GNV',
+    'DIESEL',
+    'GAS GASOL',
+    'ELÉCTRICO',
+    'HIDRÓGENO',
+    'ETANOL',
+    'BIODIESEL',
+    'GLP',
+    'GASO ELEC',
+    'DIES ELEC',
+  ];
 
   const { id } = useParams();
   const loader = useLoaderData() as VehicleLoader;
@@ -238,13 +282,21 @@ export default function VehicleForm() {
                     >
                       Clase de vehículo:
                     </label>
-                    <Input
-                      id='claseVehiculo'
-                      type='text'
-                      placeholder='Clase de vehículo'
-                      required
+                    <Select
+                      defaultValue={vehicle?.Tipo || claseOptions[0]}
                       {...register('Tipo', { required: true })}
-                    />
+                    >
+                      <SelectTrigger id='claseVehiculo'>
+                        <SelectValue placeholder='Seleccionar tipo' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {claseOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <label
@@ -297,13 +349,23 @@ export default function VehicleForm() {
                     >
                       Combustible:
                     </label>
-                    <Input
-                      id='combustible'
-                      type='text'
-                      placeholder='Combustible'
-                      required
+                    <Select
+                      defaultValue={
+                        vehicle?.TipoCombustible || gasolinaOptions[0]
+                      }
                       {...register('TipoCombustible', { required: true })}
-                    />
+                    >
+                      <SelectTrigger id='combustible'>
+                        <SelectValue placeholder='Seleccionar tipo' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {gasolinaOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <label

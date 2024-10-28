@@ -23,10 +23,11 @@ import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
 import { Suspense } from 'react';
 import RecoverPassword from './components/RecoverPassword';
-import UsefulLinks from './components/InterestLink';
+import InterestLinks from './components/InterestLink';
 import Profile from './components/Profile';
 import NotFound from './components/NotFound';
 import getUser from './routes/loaders/getUser';
+import getInterestLinks from './routes/loaders/getInterestLinks';
 
 const router = createBrowserRouter([
   {
@@ -118,7 +119,8 @@ const router = createBrowserRouter([
       },
       {
         path: '/dashboard/management/useful-links',
-        element: <UsefulLinks />,
+        loader: getInterestLinks,
+        element: <InterestLinks />,
       },
       {
         path: '/dashboard/management/profile',

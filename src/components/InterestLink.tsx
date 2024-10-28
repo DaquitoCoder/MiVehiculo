@@ -2,9 +2,19 @@ import { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Button } from './ui/button';
 import { Menu } from 'lucide-react';
+import { useLoaderData } from 'react-router-dom';
 
-const UsefulLinks = () => {
+type InterestLink = {
+  Nombre: string;
+  Descripcion: string;
+  URL: string;
+  IdEnlace: number;
+};
+
+const InterestLinks = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const loader = useLoaderData() as InterestLink[];
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -23,21 +33,34 @@ const UsefulLinks = () => {
             <h1 className='text-2xl font-bold'>Links de interés</h1>
           </div>
         </div>
-        <p className='mt-2'>
-          Interest Link is a platform that allows you to create a link that
-          contains all your social media links and share it with your friends.
-        </p>
-        <p className='mt-2'>
-          You can also use it as a signature in your emails or as a link in your
-          social media profiles.
-        </p>
-        <p className='mt-2'>
-          To get started, you need to create an account and add your social
-          media links.
-        </p>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
+          {loader.length > 0 ? (
+            loader.map((link) => (
+              <div
+                key={link.IdEnlace}
+                className='bg-white p-4 rounded-lg shadow-md'
+              >
+                <h2 className='text-lg font-bold'>{link.Nombre}</h2>
+                <p className='text-gray-500'>{link.Descripcion}</p>
+                <a
+                  href={link.URL}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='text-blue-500 hover:underline'
+                >
+                  {link.URL}
+                </a>
+              </div>
+            ))
+          ) : (
+            <div className='text-center text-gray-500 col-span-6'>
+              No hay enlaces de interés
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
 };
 
-export default UsefulLinks;
+export default InterestLinks;
