@@ -242,7 +242,15 @@ export default function VehicleServiceForm() {
                   name='PlacaVehiculo'
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={
+                        field.value ||
+                        (loader.vehicles.length > 0
+                          ? loader.vehicles[0].Placa
+                          : '')
+                      }
+                    >
                       <SelectTrigger id='PlacaVehiculo'>
                         <SelectValue placeholder='TUS PLACAS' />
                       </SelectTrigger>
