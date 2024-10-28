@@ -14,7 +14,10 @@ type InterestLink = {
 const InterestLinks = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const loader = useLoaderData() as InterestLink[];
+  const loader = useLoaderData() as {
+    links: InterestLink[];
+    error: string | null;
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -34,8 +37,8 @@ const InterestLinks = () => {
           </div>
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
-          {loader.length > 0 ? (
-            loader.map((link) => (
+          {loader.links.length > 0 ? (
+            loader.links.map((link) => (
               <div
                 key={link.IdEnlace}
                 className='bg-white p-4 rounded-lg shadow-md'

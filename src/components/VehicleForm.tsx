@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Menu, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 // import { AuthContext } from './context/AuthProvider';
 import Sidebar from './Sidebar';
 import { useForm } from 'react-hook-form';
@@ -46,7 +46,7 @@ export default function VehicleForm() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   console.log(uploadError);
 
-  const claseOptions = [
+  const claseOptions = useMemo(() => [
     'AUTOMOVIL',
     'MOTOCICLETA',
     'BUS',
@@ -67,9 +67,9 @@ export default function VehicleForm() {
     'CICLOMOTOR',
     'TRICIMOTO',
     'CUADRICICLO',
-  ];
+  ], []);
 
-  const gasolinaOptions = [
+  const gasolinaOptions = useMemo(() => [
     'GASOLINA',
     'GNV',
     'DIESEL',
@@ -81,7 +81,7 @@ export default function VehicleForm() {
     'GLP',
     'GASO ELEC',
     'DIES ELEC',
-  ];
+  ], []);
 
   const { id } = useParams();
   const loader = useLoaderData() as VehicleLoader;
@@ -116,8 +116,11 @@ export default function VehicleForm() {
           vehicle?.[field] || (field === 'KilometrajeActual' ? 0 : '')
         );
       });
+    } else {
+      setValue('Tipo', claseOptions[0]);
+      setValue('TipoCombustible', gasolinaOptions[0]);
     }
-  }, [id, loader, setValue, vehicle]);
+  }, [claseOptions, gasolinaOptions, id, loader, setValue, vehicle]);
 
   const uploadFile = async (file: File) => {
     setIsUploading(true);
@@ -202,7 +205,7 @@ export default function VehicleForm() {
   };
 
   const handleEditVehicle = async (data: Vehicle) => {
-    if (data.ArchivoFoto) {
+    if (data.ArchivoFoto.length > 0) {
       const fileId = await uploadFile(data.ArchivoFoto.item(0) as File);
       if (fileId) {
         // Proceed with form submission, including the fileId
@@ -229,8 +232,26 @@ export default function VehicleForm() {
         }
       }
     } else {
-      console.log('No file selected');
-      // Handle case where no file is selected
+      const vehicleData = buildVehicleData(data, loader.vehicle.IdFoto);
+
+      const response = await fetch(
+        `http://204.48.27.211:5000/api/vehicle/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(vehicleData),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Error updating vehicle:', response.statusText);
+      } else {
+        const vehicle = await response.json();
+        navigate('/dashboard/management/vehicle/' + vehicle.Placa);
+      }
     }
   };
 
@@ -272,7 +293,7 @@ export default function VehicleForm() {
                       type='text'
                       placeholder='Placa del vehículo'
                       required
-                      {...register('Placa', { required: true, disabled: !!id })}
+                      {...register('Placa', { disabled: !!id })}
                     />
                   </div>
                   <div>
@@ -284,7 +305,7 @@ export default function VehicleForm() {
                     </label>
                     <Select
                       defaultValue={vehicle?.Tipo || claseOptions[0]}
-                      {...register('Tipo', { required: true })}
+                      {...register('Tipo')}
                     >
                       <SelectTrigger id='claseVehiculo'>
                         <SelectValue placeholder='Seleccionar tipo' />
@@ -310,7 +331,7 @@ export default function VehicleForm() {
                       type='text'
                       placeholder='Marca'
                       required
-                      {...register('Marca', { required: true })}
+                      {...register('Marca')}
                     />
                   </div>
                   <div>
@@ -325,7 +346,7 @@ export default function VehicleForm() {
                       type='text'
                       placeholder='Modelo'
                       required
-                      {...register('Modelo', { required: true })}
+                      {...register('Modelo')}
                     />
                   </div>
                   <div>
@@ -339,7 +360,7 @@ export default function VehicleForm() {
                       id='color'
                       type='text'
                       required
-                      {...register('Color', { required: true })}
+                      {...register('Color')}
                     />
                   </div>
                   <div>
@@ -351,9 +372,9 @@ export default function VehicleForm() {
                     </label>
                     <Select
                       defaultValue={
-                        vehicle?.TipoCombustible || gasolinaOptions[0]
+                        vehicle?.TipoCombustible ?? gasolinaOptions[0]
                       }
-                      {...register('TipoCombustible', { required: true })}
+                      {...register('TipoCombustible')}
                     >
                       <SelectTrigger id='combustible'>
                         <SelectValue placeholder='Seleccionar tipo' />
@@ -379,7 +400,7 @@ export default function VehicleForm() {
                       type='text'
                       placeholder='Número de motor'
                       required
-                      {...register('NumeroMotor', { required: true })}
+                      {...register('NumeroMotor')}
                     />
                   </div>
                   <div>
@@ -394,7 +415,7 @@ export default function VehicleForm() {
                       type='text'
                       placeholder='Número de chasis'
                       required
-                      {...register('NumeroChasis', { required: true })}
+                      {...register('NumeroChasis')}
                     />
                   </div>
                   <div>
@@ -409,7 +430,7 @@ export default function VehicleForm() {
                       type='number'
                       placeholder='Kilometraje'
                       required
-                      {...register('KilometrajeActual', { required: true })}
+                      {...register('KilometrajeActual')}
                     />
                   </div>
 
@@ -424,8 +445,8 @@ export default function VehicleForm() {
                       id='nombre'
                       type='file'
                       accept='image/*'
-                      required
-                      {...register('ArchivoFoto', { required: true })}
+                      required={!id}
+                      {...register('ArchivoFoto')}
                     />
                   </div>
                 </div>

@@ -65,7 +65,7 @@ const navItems: NavItem[] = [
     id: 'documentos',
     label: 'Documentos',
     icon: <FileText className='mx-2 w-5 h-5' />,
-    href: '#',
+    href: '/dashboard/management/documents',
   },
   {
     id: 'enlaces',

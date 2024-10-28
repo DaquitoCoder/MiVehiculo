@@ -11,5 +11,8 @@ export default async function getInterestLinks() {
   });
 
   const json = await response.json();
-  return json;
+  return {
+    links: json.detail ? [] : json,
+    error: json.detail || null,
+  };
 }

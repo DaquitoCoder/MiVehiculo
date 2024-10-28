@@ -28,6 +28,8 @@ import Profile from './components/Profile';
 import NotFound from './components/NotFound';
 import getUser from './routes/loaders/getUser';
 import getInterestLinks from './routes/loaders/getInterestLinks';
+import Documents from './components/Documents';
+import getDocuments from './routes/loaders/getDocuments';
 
 const router = createBrowserRouter([
   {
@@ -126,6 +128,11 @@ const router = createBrowserRouter([
         path: '/dashboard/management/profile',
         loader: getUser,
         element: <Profile />,
+      },
+      {
+        path: '/dashboard/management/documents',
+        loader: getDocuments,
+        element: <Documents />,
       },
       {
         path: '*',
