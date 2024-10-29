@@ -3,7 +3,13 @@ import Sidebar from './Sidebar';
 import { Button } from './ui/button';
 import { Eye, Menu } from 'lucide-react';
 import { Link, useLoaderData } from 'react-router-dom';
-import { Card, CardContent, CardFooter, CardTitle } from './ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
 
 type InterestLink = {
   Nombre: string;
@@ -46,7 +52,9 @@ const InterestLinks = () => {
                   className='flex flex-col justify-between h-full'
                 >
                   <div>
-                    <CardTitle className='px-6 py-2'>{link.Nombre}</CardTitle>
+                    <CardHeader>
+                      <CardTitle>{link.Nombre}</CardTitle>
+                    </CardHeader>
                     <CardContent>
                       <p className='text-gray-500'>{link.Descripcion}</p>
                     </CardContent>

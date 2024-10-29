@@ -46,7 +46,7 @@ interface VehicleService {
   DescripcionFalla: string;
   Diagnostico: string;
   IdServicioRealizado: number;
-  Fecha: string;
+  Date: string;
 }
 interface LoaderData {
   services: VehicleService[];
@@ -171,10 +171,10 @@ export default function ServiceHistory() {
                             {service.IdServicioRealizado}
                           </TableCell>
                           <TableCell>{service.PlacaVehiculo}</TableCell>
-                          <TableCell>{service.Fecha.split('T')[0]}</TableCell>
+                          <TableCell>{service.Date}</TableCell>
                           <TableCell>{service.TipoServicio}</TableCell>
                           <TableCell>{service.NombreNegocio}</TableCell>
-                          <TableCell>{service.ValorServicio}</TableCell>
+                          <TableCell>${service.ValorServicio.toLocaleString('es-CO')}</TableCell>
                           <TableCell>Ver</TableCell>
                           <TableCell className='text-right'>
                             <div className='flex justify-end space-x-2'>

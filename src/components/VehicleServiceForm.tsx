@@ -35,7 +35,7 @@ interface VehicleService {
   DescripcionFalla: string;
   Diagnostico: string;
   IdServicioRealizado: number;
-  Fecha: string;
+  Date: string;
 }
 
 type Vehicle = {
@@ -71,7 +71,7 @@ export default function VehicleServiceForm() {
   const { control, handleSubmit, watch, reset } = useForm<VehicleService>({
     defaultValues: {
       TipoServicio: 'Taller',
-      PlacaVehiculo: '',
+      PlacaVehiculo: loader.vehicles.length > 0 ? loader.vehicles[0].Placa : '',
       NombreNegocio: '',
       ValorServicio: 0,
       Duracion: 0,
@@ -81,6 +81,7 @@ export default function VehicleServiceForm() {
       Repuestos: '',
       DescripcionFalla: '',
       Diagnostico: '',
+      Date: new Date().toISOString().split('T')[0],
     },
   });
 
@@ -216,117 +217,144 @@ export default function VehicleServiceForm() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-              <div>
-                <Label htmlFor='TipoServicio'>Tipo de servicio</Label>
-                <Controller
-                  name='TipoServicio'
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger id='TipoServicio'>
-                        <SelectValue placeholder='Seleccionar tipo de servicio' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='Taller'>Taller</SelectItem>
-                        <SelectItem value='Parqueadero'>Parqueadero</SelectItem>
-                        <SelectItem value='Lavadero'>Lavadero</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor='PlacaVehiculo'>Placa</Label>
-                <Controller
-                  name='PlacaVehiculo'
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={
-                        field.value ||
-                        (loader.vehicles.length > 0
-                          ? loader.vehicles[0].Placa
-                          : '')
-                      }
-                    >
-                      <SelectTrigger id='PlacaVehiculo'>
-                        <SelectValue placeholder='TUS PLACAS' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {loader.vehicles.map((vehicle) => (
-                          <SelectItem key={vehicle.Placa} value={vehicle.Placa}>
-                            {vehicle.Placa}
+              <div className='grid grid-cols-2 gap-4'>
+                <div>
+                  <Label htmlFor='TipoServicio'>Tipo de servicio</Label>
+                  <Controller
+                    name='TipoServicio'
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger id='TipoServicio'>
+                          <SelectValue placeholder='Seleccionar tipo de servicio' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='Taller'>Taller</SelectItem>
+                          <SelectItem value='Parqueadero'>
+                            Parqueadero
                           </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
+                          <SelectItem value='Lavadero'>Lavadero</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor='NombreNegocio'>Nombre Negocio</Label>
+                  <Controller
+                    name='NombreNegocio'
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        id='NombreNegocio'
+                        placeholder='Nombre del negocio'
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
               </div>
-
               <div>
-                <Label htmlFor='NombreNegocio'>Nombre Negocio</Label>
+                <Label htmlFor='Fecha'>Fecha</Label>
                 <Controller
-                  name='NombreNegocio'
+                  name='Date'
                   control={control}
                   render={({ field }) => (
                     <Input
-                      id='NombreNegocio'
-                      placeholder='Nombre del negocio'
+                      id='Fecha'
+                      type='date'
+                      placeholder='Fecha'
                       {...field}
                     />
                   )}
                 />
               </div>
+              <div className='grid grid-cols-2 gap-4'>
+                <div>
+                  <Label htmlFor='PlacaVehiculo'>Placa</Label>
+                  <Controller
+                    name='PlacaVehiculo'
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={
+                          field.value ||
+                          (loader.vehicles.length > 0
+                            ? loader.vehicles[0].Placa
+                            : '')
+                        }
+                      >
+                        <SelectTrigger id='PlacaVehiculo'>
+                          <SelectValue placeholder='TUS PLACAS' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loader.vehicles.map((vehicle) => (
+                            <SelectItem
+                              key={vehicle.Placa}
+                              value={vehicle.Placa}
+                            >
+                              {vehicle.Placa}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor='Duracion'>Duración (en minutos)</Label>
-                <Controller
-                  name='Duracion'
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      id='Duracion'
-                      placeholder='Duración'
-                      type='number'
-                      {...field}
-                    />
-                  )}
-                />
+                <div>
+                  <Label htmlFor='Duracion'>Duración (en minutos)</Label>
+                  <Controller
+                    name='Duracion'
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        id='Duracion'
+                        placeholder='Duración'
+                        type='number'
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               {serviceType === 'Taller' && (
                 <>
-                  <div>
-                    <Label htmlFor='Kilometraje'>Kilometraje</Label>
-                    <Controller
-                      name='Kilometraje'
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id='Kilometraje'
-                          placeholder='Kilometraje actual'
-                          type='number'
-                          {...field}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor='Concepto'>Concepto</Label>
-                    <Controller
-                      name='Concepto'
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id='Concepto'
-                          placeholder='Concepto'
-                          {...field}
-                        />
-                      )}
-                    />
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <Label htmlFor='Kilometraje'>Kilometraje</Label>
+                      <Controller
+                        name='Kilometraje'
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            id='Kilometraje'
+                            placeholder='Kilometraje actual'
+                            type='number'
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor='Concepto'>Concepto</Label>
+                      <Controller
+                        name='Concepto'
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            id='Concepto'
+                            placeholder='Concepto'
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -354,33 +382,36 @@ export default function VehicleServiceForm() {
                       )}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor='DescripcionFalla'>Falla</Label>
-                    <Controller
-                      name='DescripcionFalla'
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id='DescripcionFalla'
-                          placeholder='Descripción de la falla'
-                          {...field}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor='Diagnostico'>Diagnóstico</Label>
-                    <Controller
-                      name='Diagnostico'
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id='Diagnostico'
-                          placeholder='Diagnóstico del problema'
-                          {...field}
-                        />
-                      )}
-                    />
+
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <Label htmlFor='DescripcionFalla'>Falla</Label>
+                      <Controller
+                        name='DescripcionFalla'
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            id='DescripcionFalla'
+                            placeholder='Descripción de la falla'
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor='Diagnostico'>Diagnóstico</Label>
+                      <Controller
+                        name='Diagnostico'
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            id='Diagnostico'
+                            placeholder='Diagnóstico del problema'
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
                 </>
               )}

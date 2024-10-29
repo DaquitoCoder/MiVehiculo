@@ -418,18 +418,35 @@ export default function Documents() {
             </div>
           ) : (
             filteredDocuments.map((doc) => (
-              <Card key={doc.IdArchivo}>
-                <CardHeader>
-                  <CardTitle>{doc.NombreDocumento}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>Tipo: {doc.TipoDocumento}</p>
-                  <p>Emisión: {formatDate(doc.FechaEmision)}</p>
-                  {doc.TieneFechaVencimiento && (
-                    <p>Vence: {formatDate(doc.FechaVencimiento)}</p>
-                  )}
-                  <p>Costo: ${doc.CostoDocumento.toLocaleString('es-CO')}</p>
-                </CardContent>
+              <Card
+                key={doc.IdArchivo}
+                className='flex flex-col justify-between h-full'
+              >
+                <div>
+                  <CardHeader>
+                    <CardTitle>{doc.NombreDocumento}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Tipo: {doc.TipoDocumento}</p>
+                    <p>Emisión: {formatDate(doc.FechaEmision)}</p>
+                    {doc.TieneFechaVencimiento && (
+                      <>
+                        <p>Vence: {formatDate(doc.FechaVencimiento)}</p>
+                        <p
+                          className={
+                            doc.EstaVencido ? 'text-red-600' : 'text-black'
+                          }
+                        >
+                          {doc.EstaVencido
+                            ? 'Vencido'
+                            : `Vence en ${doc.DiasParaVencer} días`}
+                        </p>
+                      </>
+                    )}
+                    <p>Placa: {doc.IdVehiculo}</p>
+                    <p>Costo: ${doc.CostoDocumento.toLocaleString('es-CO')}</p>
+                  </CardContent>
+                </div>
                 <CardFooter className='gap-2'>
                   <Button
                     variant='destructive'

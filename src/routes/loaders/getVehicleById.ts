@@ -42,10 +42,24 @@ export default async function getVehicleById(vehicleId: string) {
 
   const jsonServices = await responseServices.json();
 
+  const responseDocuments = await fetch(
+    `http://204.48.27.211:5000/api/documents/vehicles/${vehicleId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+      },
+    }
+  );
+
+  const jsonDocuments = await responseDocuments.json();
+
   const object = {
     vehicle: json.detail ? {} : json,
     services: jsonServices.detail ? [] : jsonServices,
     fuelHistory: jsonFuelHistory.detail ? [] : jsonFuelHistory,
+    documents: jsonDocuments.detail ? [] : jsonDocuments,
     error: json.detail || null,
   };
   return object;

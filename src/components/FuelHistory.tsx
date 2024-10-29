@@ -44,7 +44,7 @@ import { useLoaderData } from 'react-router-dom';
 interface FuelRefill {
   CostoTotal: string;
   EstacionServicio: string;
-  Fecha: string;
+  Date: string;
   GalonesTanqueados: string;
   IdRecargaCombustible?: number;
   IdUbicacion?: number;
@@ -154,7 +154,7 @@ export default function FuelHistory() {
         Number(formData.get('valorGalon')) * Number(formData.get('galones'))
       ).toString(),
       EstacionServicio: formData.get('estacion') as string,
-      Fecha: new Date().toISOString(),
+      Date: formData.get('date') as string,
       IdUbicacion: 1, // This could be dynamic if needed
     };
 
@@ -207,6 +207,7 @@ export default function FuelHistory() {
         Number(formData.get('valorGalon')) * Number(formData.get('galones'))
       ).toString(),
       EstacionServicio: formData.get('estacion') as string,
+      Date: formData.get('date') as string,
     };
 
     try {
@@ -316,6 +317,10 @@ export default function FuelHistory() {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div>
+                      <Label htmlFor='fecha'>Fecha</Label>
+                      <Input id='fecha' name='date' type='date' />
+                    </div>
                     <div className='grid grid-cols-2 gap-4'>
                       <div>
                         <Label htmlFor='valorGalon'>Valor del galón</Label>
@@ -390,6 +395,15 @@ export default function FuelHistory() {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div>
+                      <Label htmlFor='fecha'>Fecha</Label>
+                      <Input
+                        id='fecha'
+                        name='date'
+                        type='date'
+                        defaultValue={editingRefill?.Date}
+                      />
+                    </div>
                     <div className='grid grid-cols-2 gap-4'>
                       <div>
                         <Label htmlFor='valorGalon'>Valor del galón</Label>
@@ -413,7 +427,7 @@ export default function FuelHistory() {
                       </div>
                     </div>
                     <div className='grid grid-cols-2 gap-4'>
-                        <div>
+                      <div>
                         <Label htmlFor='galones'>Galones tanqueados</Label>
                         <Input
                           id='galones'
@@ -423,7 +437,7 @@ export default function FuelHistory() {
                           placeholder='Galones tanqueados'
                           defaultValue={editingRefill?.GalonesTanqueados}
                         />
-                        </div>
+                      </div>
                       <div>
                         <Label htmlFor='estacion'>Estación</Label>
                         <Input
@@ -454,6 +468,7 @@ export default function FuelHistory() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className='w-[50px]'>Id</TableHead>
+                      <TableHead>Fecha</TableHead>
                       <TableHead>Placa</TableHead>
                       <TableHead>Kilometraje</TableHead>
                       <TableHead>Cantidad (gal)</TableHead>
@@ -477,6 +492,7 @@ export default function FuelHistory() {
                           <TableCell className='font-medium'>
                             {refill.IdRecargaCombustible}
                           </TableCell>
+                          <TableCell>{refill.Date}</TableCell>
                           <TableCell>{refill.IdVehiculo}</TableCell>
                           <TableCell>{refill.Kilometraje}</TableCell>
                           <TableCell>{refill.GalonesTanqueados}</TableCell>

@@ -39,7 +39,7 @@ interface Service {
   DescripcionFalla: string;
   Diagnostico: string;
   IdServicioRealizado?: number;
-  Fecha: string;
+  Date: string;
 }
 type Vehicle = {
   id: number;
@@ -60,7 +60,7 @@ type Vehicle = {
 interface FuelRefill {
   CostoTotal: string;
   EstacionServicio: string;
-  Fecha: string;
+  Date: string;
   GalonesTanqueados: string;
   IdRecargaCombustible?: number;
   IdUbicacion?: number;
@@ -70,9 +70,25 @@ interface FuelRefill {
   TipoCombustible: string;
 }
 
+interface Document {
+  IdVehiculo: string;
+  TipoDocumento: string;
+  NombreDocumento: string;
+  FechaEmision: string;
+  FechaVencimiento: string;
+  TieneFechaVencimiento: boolean;
+  CostoDocumento: number;
+  IdArchivo: number;
+  IdDocumento: number;
+  EstaVencido: boolean;
+  DiasParaVencer: number;
+  urlFoto: string;
+}
+
 type VehicleDetailLoaderData = {
   vehicle: Vehicle;
   services: Service[];
+  documents: Document[];
   fuelHistory: FuelRefill[];
   error: string | null;
 };
@@ -84,10 +100,12 @@ export default function VehicleDetail() {
 
   const [currentServicePage, setCurrentServicePage] = useState(1);
   const [currentFuelPage, setCurrentFuelPage] = useState(1);
+  const [currentDocumentPage, setCurrentDocumentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const itemsPerPage = 5;
   const totalServicePages = Math.ceil(loader.services.length / itemsPerPage);
   const totalFuelPages = Math.ceil(loader.fuelHistory.length / itemsPerPage);
+  const totalDocumentPages = Math.ceil(loader.documents.length / itemsPerPage);
 
   type ExpenseData = {
     name: string;
@@ -96,7 +114,7 @@ export default function VehicleDetail() {
 
   const expensesData: ExpenseData[] = loader.fuelHistory
     .map((refill) => ({
-      name: new Date(refill.Fecha).toLocaleDateString('es-ES', {
+      name: new Date(refill.Date).toLocaleDateString('es-ES', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -105,7 +123,7 @@ export default function VehicleDetail() {
     }))
     .concat(
       loader.services.map((service) => ({
-        name: new Date(service.Fecha).toLocaleDateString('es-ES', {
+        name: new Date(service.Date).toLocaleDateString('es-ES', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
@@ -133,6 +151,11 @@ export default function VehicleDetail() {
     currentFuelPage * itemsPerPage
   );
 
+  const paginatedDocuments = loader.documents.slice(
+    (currentDocumentPage - 1) * itemsPerPage,
+    currentDocumentPage * itemsPerPage
+  );
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -155,7 +178,7 @@ export default function VehicleDetail() {
             {vehicle.Placa}
           </h1>
         </div>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6'>
           <Card>
             <CardContent className='p-4 md:p-6'>
               <div className='flex justify-center mb-4'>
@@ -247,7 +270,7 @@ export default function VehicleDetail() {
                             className='border-b'
                           >
                             <td className='py-2'>
-                              {new Date(service.Fecha).toLocaleDateString()}
+                              {new Date(service.Date).toLocaleDateString()}
                             </td>
                             <td className='py-2'>{service.TipoServicio}</td>
                             <td className='py-2'>{service.NombreNegocio}</td>
@@ -340,7 +363,7 @@ export default function VehicleDetail() {
                               className='border-b'
                             >
                               <td className='py-2'>
-                                {new Date(refill.Fecha).toLocaleDateString()}
+                                {new Date(refill.Date).toLocaleDateString()}
                               </td>
                               <td className='py-2'>{refill.Kilometraje}</td>
                               <td className='py-2'>
@@ -409,7 +432,120 @@ export default function VehicleDetail() {
                   </Link>
                 </TabsContent>
                 <TabsContent value='documentos'>
-                  <p>Contenido de documentos aquí</p>
+                  <div className='overflow-x-auto'>
+                    <table className='w-full'>
+                      <thead>
+                        <tr className='border-b'>
+                          <th className='text-left py-2'>ID Documento</th>
+                          <th className='text-left py-2'>Tipo de documento</th>
+                          <th className='text-left py-2'>Nombre Documento</th>
+                          <th className='text-left py-2'>Fecha Emision</th>
+                          <th className='text-left py-2'>Fecha Vencimiento</th>
+                          <th className='text-left py-2'>Costo Documento</th>
+                          <th className='text-left py-2'>Dias Para Vencer</th>
+                          <th className='text-left py-2'>Esta Vencido</th>
+                          <th className='text-left py-2'>Ver</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedDocuments.length === 0 ? (
+                          <tr>
+                            <td colSpan={9} className='text-center py-2'>
+                              No hay documentos registradas
+                            </td>
+                          </tr>
+                        ) : (
+                          paginatedDocuments.map((doc) => (
+                            <tr key={doc.IdDocumento} className='border-b'>
+                              <td className='py-2'>{doc.IdDocumento}</td>
+                              <td className='py-2'>{doc.TipoDocumento}</td>
+                              <td className='py-2'>{doc.NombreDocumento}</td>
+                              <td className='py-2'>{doc.FechaEmision}</td>
+                              <td className='py-2'>
+                                {doc.TieneFechaVencimiento
+                                  ? doc.FechaVencimiento
+                                  : '-'}
+                              </td>
+                              <td className='py-2'>${doc.CostoDocumento}</td>
+                              <td className='py-2'>
+                                {doc.TieneFechaVencimiento
+                                  ? doc.DiasParaVencer
+                                  : '-'}
+                              </td>
+                              <td className='py-2'>
+                                {doc.TieneFechaVencimiento
+                                  ? doc.EstaVencido
+                                    ? 'Si'
+                                    : 'No'
+                                  : '-'}
+                              </td>
+                              <td className='py-2'>
+                                <Link to={doc.urlFoto}>
+                                  <Button variant='link' className='p-0'>
+                                    Ver
+                                  </Button>
+                                </Link>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className='flex flex-col sm:flex-row justify-between items-center mt-4'>
+                    <div className='flex space-x-2 mb-2 sm:mb-0'>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        onClick={() => setCurrentDocumentPage(1)}
+                        disabled={currentDocumentPage === 1}
+                      >
+                        <ChevronsLeft className='h-4 w-4' />
+                      </Button>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        onClick={() =>
+                          setCurrentDocumentPage((prev) =>
+                            Math.max(prev - 1, 1)
+                          )
+                        }
+                        disabled={currentDocumentPage === 1}
+                      >
+                        <ChevronLeft className='h-4 w-4' />
+                      </Button>
+                    </div>
+                    <span className='mb-2 sm:mb-0'>
+                      Página {currentDocumentPage} de {totalDocumentPages}
+                    </span>
+                    <div className='flex space-x-2'>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        onClick={() =>
+                          setCurrentDocumentPage((prev) =>
+                            Math.min(prev + 1, totalDocumentPages)
+                          )
+                        }
+                        disabled={currentDocumentPage === totalDocumentPages}
+                      >
+                        <ChevronRight className='h-4 w-4' />
+                      </Button>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        onClick={() =>
+                          setCurrentDocumentPage(currentDocumentPage)
+                        }
+                        disabled={currentDocumentPage === totalDocumentPages}
+                      >
+                        <ChevronsRight className='h-4 w-4' />
+                      </Button>
+                    </div>
+                  </div>
+                  <Link to={`/dashboard/management/documents`}>
+                    <Button className='mt-4 w-full sm:w-auto'>Agregar</Button>
+                  </Link>
                 </TabsContent>
               </Tabs>
             </CardContent>
