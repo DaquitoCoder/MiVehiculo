@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Toaster } from './ui/sonner';
+import Logo from '../assets/Logo.jpg';
 
 const countries = [
   { value: 'es', label: 'España', code: '+34' },
@@ -165,7 +166,7 @@ export default function SignUp() {
       <header className='bg-blue-500 text-white p-4 flex justify-between items-center'>
         <div className='flex items-center'>
           <Mail className='mr-2 h-6 w-6' />
-          <h1 className='text-xl font-bold'>Mi vehiculo</h1>
+          <h1 className='text-xl font-bold'>Vehículo 360</h1>
         </div>
         <Link to='/login'>
           <Button
@@ -179,7 +180,7 @@ export default function SignUp() {
       <main className='flex-grow flex items-center justify-center p-4'>
         <div className='bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl w-full flex'>
           <div className='w-1/2 bg-gray-200 hidden md:flex items-center justify-center'>
-            <span className='text-gray-500 text-4xl'>Logo</span>
+            <img src={Logo} alt='Logo' className='object-cover w-full h-full' />
           </div>
           <div className='w-full md:w-1/2 p-8'>
             <h2 className='text-2xl font-bold mb-6 text-center'>Registrarse</h2>

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useAuthContext } from './context/AuthProvider';
 import { PRIVATE } from '@/routes/paths';
+import Logo from '../assets/Logo.jpg';
 
 type LoginFormInputs = {
   username: string;
@@ -94,7 +95,7 @@ export default function LoginForm() {
       <header className='bg-blue-500 text-white p-4 flex justify-between items-center'>
         <div className='flex items-center'>
           <Mail className='mr-2 h-6 w-6' />
-          <h1 className='text-xl font-bold'>Mi vehiculo</h1>
+          <h1 className='text-xl font-bold'>Vehículo 360</h1>
         </div>
         <Link to='/sign-up'>
           <Button
@@ -108,7 +109,11 @@ export default function LoginForm() {
       <main className='flex-grow flex items-center justify-center p-4'>
         <div className='bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl w-full flex'>
           <div className='w-1/2 bg-gray-200 hidden md:flex items-center justify-center'>
-            <span className='text-gray-500 text-4xl'>Logo</span>
+            <img
+              src={Logo}
+              alt='login'
+              className='object-cover w-full h-full'
+            />
           </div>
           <div className='w-full md:w-1/2 p-8'>
             <h2 className='text-2xl font-bold mb-6 text-center'>Login</h2>

@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Logo from '../assets/Logo.jpg';
 
 interface FormData {
   password: string;
@@ -78,7 +79,7 @@ const RecoverPassword = () => {
       <header className='bg-blue-500 text-white p-4 flex justify-between items-center'>
         <div className='flex items-center'>
           <Mail className='mr-2 h-6 w-6' />
-          <h1 className='text-xl font-bold'>Mi vehiculo</h1>
+          <h1 className='text-xl font-bold'>Vehículo 360</h1>
         </div>
         <div className='flex items-start gap-2'>
           <Link to='/sign-up'>
@@ -102,9 +103,9 @@ const RecoverPassword = () => {
       <main className='flex-grow flex items-center justify-center p-4'>
         <div className='bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl w-full flex'>
           <div className='w-1/2 bg-gray-200 hidden md:flex items-center justify-center'>
-            <span className='text-gray-500 text-4xl'>Logo</span>
+            <img src={Logo} alt='Logo' className='object-cover w-full h-full' />
           </div>
-          <div className='w-full md:w-1/2 p-8'>
+          <div className='flex flex-col justify-center w-full md:w-1/2 p-8'>
             <h2 className='text-2xl font-bold mb-6 text-center'>
               Recuperar contraseña
             </h2>
