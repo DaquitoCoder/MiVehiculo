@@ -185,35 +185,37 @@ export default function SignUp() {
           <div className='w-full md:w-1/2 p-8'>
             <h2 className='text-2xl font-bold mb-6 text-center'>Registrarse</h2>
             <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
-              <div>
-                <label
-                  htmlFor='name'
-                  className='block text-sm font-medium text-gray-700 mb-1'
-                >
-                  * Nombre:
-                </label>
-                <Input
-                  id='name'
-                  type='text'
-                  placeholder='Nombre completo'
-                  required
-                  {...register('Nombre', { required: true })}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor='email'
-                  className='block text-sm font-medium text-gray-700 mb-1'
-                >
-                  * Correo:
-                </label>
-                <Input
-                  id='email'
-                  type='email'
-                  placeholder='Correo electrónico'
-                  required
-                  {...register('Email', { required: true })}
-                />
+              <div className='grid grid-cols-2 gap-4'>
+                <div>
+                  <label
+                    htmlFor='name'
+                    className='block text-sm font-medium text-gray-700 mb-1'
+                  >
+                    * Nombre:
+                  </label>
+                  <Input
+                    id='name'
+                    type='text'
+                    placeholder='Nombre completo'
+                    required
+                    {...register('Nombre', { required: true })}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor='email'
+                    className='block text-sm font-medium text-gray-700 mb-1'
+                  >
+                    * Correo:
+                  </label>
+                  <Input
+                    id='email'
+                    type='email'
+                    placeholder='Correo electrónico'
+                    required
+                    {...register('Email', { required: true })}
+                  />
+                </div>
               </div>
               <div>
                 <label

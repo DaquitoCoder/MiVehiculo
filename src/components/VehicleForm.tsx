@@ -46,42 +46,48 @@ export default function VehicleForm() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   console.log(uploadError);
 
-  const claseOptions = useMemo(() => [
-    'AUTOMOVIL',
-    'MOTOCICLETA',
-    'BUS',
-    'BUSETA',
-    'CAMION',
-    'CAMIONETA',
-    'CAMPERO',
-    'MICROBUS',
-    'TRACTOCAMION',
-    'MOTOCARRO',
-    'MOTOTRICICLO',
-    'CUATRIMOTO',
-    'REMOLQUE',
-    'SEMIREMOLQUE',
-    'VOLQUETA',
-    'SIN CLASE',
-    'MAQ. CONSTRUCCION O MINERA',
-    'CICLOMOTOR',
-    'TRICIMOTO',
-    'CUADRICICLO',
-  ], []);
+  const claseOptions = useMemo(
+    () => [
+      'AUTOMOVIL',
+      'MOTOCICLETA',
+      'BUS',
+      'BUSETA',
+      'CAMION',
+      'CAMIONETA',
+      'CAMPERO',
+      'MICROBUS',
+      'TRACTOCAMION',
+      'MOTOCARRO',
+      'MOTOTRICICLO',
+      'CUATRIMOTO',
+      'REMOLQUE',
+      'SEMIREMOLQUE',
+      'VOLQUETA',
+      'SIN CLASE',
+      'MAQ. CONSTRUCCION O MINERA',
+      'CICLOMOTOR',
+      'TRICIMOTO',
+      'CUADRICICLO',
+    ],
+    []
+  );
 
-  const gasolinaOptions = useMemo(() => [
-    'GASOLINA',
-    'GNV',
-    'DIESEL',
-    'GAS GASOL',
-    'ELÉCTRICO',
-    'HIDRÓGENO',
-    'ETANOL',
-    'BIODIESEL',
-    'GLP',
-    'GASO ELEC',
-    'DIES ELEC',
-  ], []);
+  const gasolinaOptions = useMemo(
+    () => [
+      'GASOLINA',
+      'GNV',
+      'DIESEL',
+      'GAS GASOL',
+      'ELÉCTRICO',
+      'HIDRÓGENO',
+      'ETANOL',
+      'BIODIESEL',
+      'GLP',
+      'GASO ELEC',
+      'DIES ELEC',
+    ],
+    []
+  );
 
   const { id } = useParams();
   const loader = useLoaderData() as VehicleLoader;
@@ -281,142 +287,150 @@ export default function VehicleForm() {
             <Card>
               <CardContent>
                 <div className='space-y-4 my-4'>
-                  <div>
-                    <label
-                      htmlFor='placa'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Placa:
-                    </label>
-                    <Input
-                      id='placa'
-                      type='text'
-                      placeholder='Placa del vehículo'
-                      required
-                      {...register('Placa', { disabled: !!id })}
-                    />
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label
+                        htmlFor='placa'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Placa:
+                      </label>
+                      <Input
+                        id='placa'
+                        type='text'
+                        placeholder='Placa del vehículo'
+                        required
+                        {...register('Placa', { disabled: !!id })}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor='claseVehiculo'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Clase de vehículo:
+                      </label>
+                      <Select
+                        defaultValue={vehicle?.Tipo || claseOptions[0]}
+                        {...register('Tipo')}
+                      >
+                        <SelectTrigger id='claseVehiculo'>
+                          <SelectValue placeholder='Seleccionar tipo' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {claseOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor='claseVehiculo'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Clase de vehículo:
-                    </label>
-                    <Select
-                      defaultValue={vehicle?.Tipo || claseOptions[0]}
-                      {...register('Tipo')}
-                    >
-                      <SelectTrigger id='claseVehiculo'>
-                        <SelectValue placeholder='Seleccionar tipo' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {claseOptions.map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label
+                        htmlFor='marca'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Marca:
+                      </label>
+                      <Input
+                        id='marca'
+                        type='text'
+                        placeholder='Marca'
+                        required
+                        {...register('Marca')}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor='modelo'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Modelo:
+                      </label>
+                      <Input
+                        id='modelo'
+                        type='text'
+                        placeholder='Modelo'
+                        required
+                        {...register('Modelo')}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor='marca'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Marca:
-                    </label>
-                    <Input
-                      id='marca'
-                      type='text'
-                      placeholder='Marca'
-                      required
-                      {...register('Marca')}
-                    />
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label
+                        htmlFor='color'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Color:
+                      </label>
+                      <Input
+                        id='color'
+                        type='text'
+                        required
+                        {...register('Color')}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor='combustible'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Combustible:
+                      </label>
+                      <Select
+                        defaultValue={
+                          vehicle?.TipoCombustible ?? gasolinaOptions[0]
+                        }
+                        {...register('TipoCombustible')}
+                      >
+                        <SelectTrigger id='combustible'>
+                          <SelectValue placeholder='Seleccionar tipo' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {gasolinaOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor='modelo'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Modelo:
-                    </label>
-                    <Input
-                      id='modelo'
-                      type='text'
-                      placeholder='Modelo'
-                      required
-                      {...register('Modelo')}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='color'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Color:
-                    </label>
-                    <Input
-                      id='color'
-                      type='text'
-                      required
-                      {...register('Color')}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='combustible'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Combustible:
-                    </label>
-                    <Select
-                      defaultValue={
-                        vehicle?.TipoCombustible ?? gasolinaOptions[0]
-                      }
-                      {...register('TipoCombustible')}
-                    >
-                      <SelectTrigger id='combustible'>
-                        <SelectValue placeholder='Seleccionar tipo' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {gasolinaOptions.map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='motor'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Número de motor:
-                    </label>
-                    <Input
-                      id='motor'
-                      type='text'
-                      placeholder='Número de motor'
-                      required
-                      {...register('NumeroMotor')}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='chasis'
-                      className='block text-sm font-medium text-gray-700 mb-1'
-                    >
-                      Número de chasis:
-                    </label>
-                    <Input
-                      id='chasis'
-                      type='text'
-                      placeholder='Número de chasis'
-                      required
-                      {...register('NumeroChasis')}
-                    />
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label
+                        htmlFor='motor'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Número de motor:
+                      </label>
+                      <Input
+                        id='motor'
+                        type='text'
+                        placeholder='Número de motor'
+                        required
+                        {...register('NumeroMotor')}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor='chasis'
+                        className='block text-sm font-medium text-gray-700 mb-1'
+                      >
+                        Número de chasis:
+                      </label>
+                      <Input
+                        id='chasis'
+                        type='text'
+                        placeholder='Número de chasis'
+                        required
+                        {...register('NumeroChasis')}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
