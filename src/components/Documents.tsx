@@ -30,10 +30,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Bell, Menu, Plus, Search } from 'lucide-react';
+import { Bell, EyeIcon, Menu, Plus, Search } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { toast, Toaster } from 'sonner';
-import { useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 
 interface Document {
   IdVehiculo: string;
@@ -48,6 +48,7 @@ interface Document {
   EstaVencido: boolean;
   DiasParaVencer: number;
   Archivo: FileList;
+  urlFoto: string;
 }
 
 export default function Documents() {
@@ -133,8 +134,9 @@ export default function Documents() {
         );
 
         if (response.ok) {
+          setDocuments((prev) => [...prev, object]);
           toast.success('Documento agregado correctamente');
-          closeDeleteDialog();
+          closeCreateDialog();
         } else {
           console.error('Error creating document:', response);
         }
@@ -195,6 +197,10 @@ export default function Documents() {
 
   const closeDeleteDialog = () => {
     setIsDeleteModalOpen(false);
+  };
+
+  const closeCreateDialog = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -424,13 +430,19 @@ export default function Documents() {
                   )}
                   <p>Costo: ${doc.CostoDocumento.toLocaleString('es-CO')}</p>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className='gap-2'>
                   <Button
                     variant='destructive'
                     onClick={() => handleDeleteDocument(doc.IdDocumento)}
                   >
                     Eliminar
                   </Button>
+                  <Link to={doc.urlFoto} target='_blank'>
+                    <Button variant='outline'>
+                      <EyeIcon className='h-5 w-5 mr-2' />
+                      Ver
+                    </Button>
+                  </Link>
                 </CardFooter>
               </Card>
             ))

@@ -343,6 +343,7 @@ export default function FuelHistory() {
                           id='galones'
                           name='galones'
                           type='number'
+                          step='0.01'
                           placeholder='Galones tanqueados'
                         />
                       </div>

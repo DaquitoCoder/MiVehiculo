@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Button } from './ui/button';
-import { Menu } from 'lucide-react';
-import { useLoaderData } from 'react-router-dom';
+import { Eye, Menu } from 'lucide-react';
+import { Link, useLoaderData } from 'react-router-dom';
+import { Card, CardContent, CardFooter, CardTitle } from './ui/card';
 
 type InterestLink = {
   Nombre: string;
@@ -39,21 +40,27 @@ const InterestLinks = () => {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
           {loader.links.length > 0 ? (
             loader.links.map((link) => (
-              <div
-                key={link.IdEnlace}
-                className='bg-white p-4 rounded-lg shadow-md'
-              >
-                <h2 className='text-lg font-bold'>{link.Nombre}</h2>
-                <p className='text-gray-500'>{link.Descripcion}</p>
-                <a
-                  href={link.URL}
-                  target='_blank'
-                  rel='noreferrer'
-                  className='text-blue-500 hover:underline'
+              <>
+                <Card
+                  key={link.IdEnlace}
+                  className='flex flex-col justify-between h-full'
                 >
-                  {link.URL}
-                </a>
-              </div>
+                  <div>
+                    <CardTitle className='px-6 py-2'>{link.Nombre}</CardTitle>
+                    <CardContent>
+                      <p className='text-gray-500'>{link.Descripcion}</p>
+                    </CardContent>
+                  </div>
+                  <CardFooter>
+                    <Link to={link.URL} target='_blank' rel='noreferrer'>
+                      <Button className='mt-4' variant='outline'>
+                        <Eye className='h-4 w-4 me-2' />
+                        Ver más
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </>
             ))
           ) : (
             <div className='text-center text-gray-500 col-span-6'>
