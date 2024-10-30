@@ -251,6 +251,7 @@ export default function VehicleServiceForm() {
                       <Input
                         id='NombreNegocio'
                         placeholder='Nombre del negocio'
+                        required
                         {...field}
                       />
                     )}

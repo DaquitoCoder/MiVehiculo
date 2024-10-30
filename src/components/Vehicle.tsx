@@ -139,7 +139,12 @@ export default function VehicleDetail() {
         acc.push(curr);
       }
       return acc;
-    }, []);
+    }, [])
+    .sort((a, b) => {
+      const dateA = new Date(a.name.split('/').reverse().join('-'));
+      const dateB = new Date(b.name.split('/').reverse().join('-'));
+      return dateA.getTime() - dateB.getTime();
+    });
 
   const paginatedServices = loader.services.slice(
     (currentServicePage - 1) * itemsPerPage,
