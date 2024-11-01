@@ -47,8 +47,8 @@ interface Document {
   IdDocumento: number;
   EstaVencido: boolean;
   DiasParaVencer: number;
-  Archivo: FileList;
-  urlFoto: string;
+  Archivo?: FileList;
+  urlFoto?: string;
 }
 
 export default function Documents() {
@@ -60,8 +60,10 @@ export default function Documents() {
   const [documents, setDocuments] = useState<Document[]>(
     loader.documents as Document[]
   );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<number | null>(null);
+  const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [filter, setFilter] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -73,7 +75,7 @@ export default function Documents() {
       : [];
 
   const [isOpen, setIsOpen] = useState(false);
-  const { register, handleSubmit, control, watch, setValue } =
+  const { register, handleSubmit, control, reset, watch, setValue } =
     useForm<Document>({
       defaultValues: {
         FechaEmision: new Date().toISOString().split('T')[0],
@@ -82,6 +84,12 @@ export default function Documents() {
       },
     });
   const hasExpiration = watch('TieneFechaVencimiento');
+
+  useEffect(() => {
+    if (editingDocument) {
+      reset(editingDocument);
+    }
+  }, [editingDocument, reset]);
 
   useEffect(() => {
     setValue('IdVehiculo', loader.vehicles[0].Placa);
@@ -116,7 +124,9 @@ export default function Documents() {
       ...data,
     };
 
-    const fileId = await uploadFile(data.Archivo.item(0) as File);
+    const fileId = data.Archivo
+      ? await uploadFile(data.Archivo.item(0) as File)
+      : null;
     if (fileId) {
       object.IdArchivo = fileId.toString();
 
@@ -134,9 +144,7 @@ export default function Documents() {
         );
 
         if (response.ok) {
-          setDocuments((prev) => [...prev, object]);
-          toast.success('Documento agregado correctamente');
-          closeCreateDialog();
+          window.location.reload();
         } else {
           console.error('Error creating document:', response);
         }
@@ -190,17 +198,52 @@ export default function Documents() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const handleDeleteDocument = (id: number) => {
+  const handleDeleteDocument = (id: number, doc: Document) => {
     setIsDeleteModalOpen(true);
     setCurrentDocument(id);
+    setEditingDocument(doc);
+  };
+
+  const handleEditDocument = async (data: Document) => {
+    if (!editingDocument) return;
+
+    const newDocument: Document = {
+      ...data,
+    };
+
+    if (data.Archivo && data.Archivo.length > 0) {
+      const fileId = await uploadFile(data.Archivo.item(0) as File);
+      if (fileId) {
+        newDocument.IdArchivo = fileId;
+      }
+    }
+
+    const response = await fetch(
+      `http://204.48.27.211:5000/api/documents/${editingDocument.IdDocumento}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token') || '',
+        },
+        body: JSON.stringify(newDocument),
+      }
+    );
+
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      console.error('Error editing document:', response);
+    }
+  };
+
+  const openEditDialog = (doc: Document) => {
+    setEditingDocument(doc);
+    setIsEditModalOpen(true);
   };
 
   const closeDeleteDialog = () => {
     setIsDeleteModalOpen(false);
-  };
-
-  const closeCreateDialog = () => {
-    setIsOpen(false);
   };
 
   return (
@@ -245,6 +288,136 @@ export default function Documents() {
           </div>
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
+          <AlertDialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Editar documento</AlertDialogTitle>
+              </AlertDialogHeader>
+              <form
+                onSubmit={handleSubmit(handleEditDocument)}
+                className='space-y-4'
+              >
+                <div className='grid gap-2'>
+                  <Label htmlFor='type'>Tipo de documento</Label>
+                  <Controller
+                    name='TipoDocumento'
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger id='type'>
+                          <SelectValue placeholder='Selecciona el tipo de documento' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='Tarjeta de propiedad'>
+                            Tarjeta de propiedad
+                          </SelectItem>
+                          <SelectItem value='Licencia de conducir'>
+                            Licencia de conducir
+                          </SelectItem>
+                          <SelectItem value='Cédula'>Cédula</SelectItem>
+                          <SelectItem value='SOAT'>SOAT</SelectItem>
+                          <SelectItem value='Tecnomecánica'>
+                            Tecnomecánica
+                          </SelectItem>
+                          <SelectItem value='Seguro'>Seguro</SelectItem>
+                          <SelectItem value='Otro'>Otro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <div className='grid gap-2'>
+                  <Label htmlFor='name'>Nombre del documento</Label>
+                  <Input id='name' {...register('NombreDocumento')} />
+                </div>
+                <div>
+                  <Label htmlFor='PlacaVehiculo'>Placa</Label>
+                  <Controller
+                    name='IdVehiculo'
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger id='PlacaVehiculo'>
+                          <SelectValue placeholder='TUS PLACAS' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loader.vehicles.map((vehicle) => (
+                            <SelectItem
+                              key={vehicle.Placa}
+                              value={vehicle.Placa}
+                            >
+                              {vehicle.Placa}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <div className='grid gap-2'>
+                  <Label htmlFor='emissionDate'>Fecha de emisión</Label>
+                  <Input
+                    type='date'
+                    id='emissionDate'
+                    {...register('FechaEmision')}
+                  />
+                </div>
+                <div className='flex items-center gap-2'>
+                  <Controller
+                    name='TieneFechaVencimiento'
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id='hasExpiration'
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          setValue(
+                            'FechaVencimiento',
+                            checked
+                              ? new Date().toISOString().split('T')[0]
+                              : null
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <Label htmlFor='hasExpiration'>
+                    Tiene fecha de vencimiento
+                  </Label>
+                </div>
+                {hasExpiration && (
+                  <div className='grid gap-2'>
+                    <Label htmlFor='expirationDate'>Fecha de vencimiento</Label>
+                    <Input
+                      type='date'
+                      id='expirationDate'
+                      {...register('FechaVencimiento')}
+                    />
+                  </div>
+                )}
+                <div className='grid gap-2'>
+                  <Label htmlFor='cost'>Costo</Label>
+                  <Input
+                    id='cost'
+                    type='number'
+                    {...register('CostoDocumento', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className='grid gap-2'>
+                  <Label htmlFor='file'>Selecciona imagen a subir</Label>
+                  <Input id='file' type='file' {...register('Archivo')} />
+                </div>
+                <Button type='submit'>Guardar cambios</Button>
+              </form>
+            </AlertDialogContent>
+          </AlertDialog>
           <AlertDialog
             open={isDeleteModalOpen}
             onOpenChange={setIsDeleteModalOpen}
@@ -254,7 +427,7 @@ export default function Documents() {
                 <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Esta acción no se puede deshacer. Esto eliminará
-                  permanentemente el documento <b>{currentDocument}</b>.
+                  permanentemente el documento <b>{editingDocument?.NombreDocumento}</b>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -293,19 +466,19 @@ export default function Documents() {
                           <SelectValue placeholder='Selecciona el tipo de documento' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value='tarjeta_propiedad'>
-                            Tarjeta propiedad
+                          <SelectItem value='Tarjeta de propiedad'>
+                            Tarjeta de propiedad
                           </SelectItem>
-                          <SelectItem value='licencia_conducir'>
+                          <SelectItem value='Licencia de conducir'>
                             Licencia de conducir
                           </SelectItem>
-                          <SelectItem value='cedula'>Cédula</SelectItem>
-                          <SelectItem value='soat'>SOAT</SelectItem>
-                          <SelectItem value='tecnomecanica'>
+                          <SelectItem value='Cédula'>Cédula</SelectItem>
+                          <SelectItem value='SOAT'>SOAT</SelectItem>
+                          <SelectItem value='Tecnomecánica'>
                             Tecnomecánica
                           </SelectItem>
-                          <SelectItem value='seguro'>Seguro</SelectItem>
-                          <SelectItem value='otro'>Otro</SelectItem>
+                          <SelectItem value='Seguro'>Seguro</SelectItem>
+                          <SelectItem value='Otro'>Otro</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -439,7 +612,11 @@ export default function Documents() {
                         >
                           {doc.EstaVencido
                             ? 'Vencido'
-                            : `Vence en ${doc.DiasParaVencer} días`}
+                            : `Vence en ${Math.ceil(
+                                (new Date(doc.FechaVencimiento!).getTime() -
+                                  new Date().getTime()) /
+                                  (1000 * 60 * 60 * 24)
+                              )} días`}
                         </p>
                       </>
                     )}
@@ -450,11 +627,14 @@ export default function Documents() {
                 <CardFooter className='gap-2'>
                   <Button
                     variant='destructive'
-                    onClick={() => handleDeleteDocument(doc.IdDocumento)}
+                    onClick={() => handleDeleteDocument(doc.IdDocumento, doc)}
                   >
                     Eliminar
                   </Button>
-                  <Link to={doc.urlFoto} target='_blank'>
+
+                  <Button onClick={() => openEditDialog(doc)}>Editar</Button>
+
+                  <Link to={doc.urlFoto ? doc.urlFoto : ''} target='_blank'>
                     <Button variant='outline'>
                       <EyeIcon className='h-5 w-5 mr-2' />
                       Ver
