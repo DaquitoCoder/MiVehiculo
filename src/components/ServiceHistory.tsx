@@ -147,7 +147,6 @@ export default function ServiceHistory() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className='w-[50px]'>Id</TableHead>
                       <TableHead>Placa del vehículo</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Tipo servicio</TableHead>
@@ -167,9 +166,6 @@ export default function ServiceHistory() {
                     ) : (
                       filteredServices.map((service) => (
                         <TableRow key={service.IdServicioRealizado}>
-                          <TableCell className='font-medium'>
-                            {service.IdServicioRealizado}
-                          </TableCell>
                           <TableCell>{service.PlacaVehiculo}</TableCell>
                           <TableCell>{service.Date}</TableCell>
                           <TableCell>{service.TipoServicio}</TableCell>

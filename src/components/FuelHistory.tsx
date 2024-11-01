@@ -467,7 +467,6 @@ export default function FuelHistory() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className='w-[50px]'>Id</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Placa</TableHead>
                       <TableHead>Kilometraje</TableHead>
@@ -489,9 +488,6 @@ export default function FuelHistory() {
                     ) : (
                       filteredFuelRefills.map((refill) => (
                         <TableRow key={refill.IdRecargaCombustible}>
-                          <TableCell className='font-medium'>
-                            {refill.IdRecargaCombustible}
-                          </TableCell>
                           <TableCell>{refill.Date}</TableCell>
                           <TableCell>{refill.IdVehiculo}</TableCell>
                           <TableCell>{refill.Kilometraje}</TableCell>
