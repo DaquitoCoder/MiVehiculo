@@ -18,6 +18,7 @@ import { Menu } from 'lucide-react';
 import { useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Toaster } from './ui/sonner';
+import { CustomSelect } from './Default';
 
 type ServiceType = 'Taller' | 'Parqueadero' | 'Lavadero';
 
@@ -53,8 +54,15 @@ type Vehicle = {
   urlFoto: string;
 };
 
+interface ServiceData {
+  conceptos: string[];
+  negocios: string[];
+  repuestos: string[];
+}
+
 interface VehicleServiceLoader {
   vehicles: Vehicle[];
+  services: ServiceData;
   error: string | null;
 }
 
@@ -243,18 +251,14 @@ export default function VehicleServiceForm() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor='NombreNegocio'>Nombre Negocio</Label>
-                  <Controller
+                  <Label htmlFor='NombreNegocio'>Nombre del negocio</Label>
+                  <CustomSelect
+                    options={loader.services.negocios.map((negocio) => ({
+                      label: negocio,
+                      value: negocio,
+                    }))}
                     name='NombreNegocio'
                     control={control}
-                    render={({ field }) => (
-                      <Input
-                        id='NombreNegocio'
-                        placeholder='Nombre del negocio'
-                        required
-                        {...field}
-                      />
-                    )}
                   />
                 </div>
               </div>
@@ -344,43 +348,26 @@ export default function VehicleServiceForm() {
                     </div>
                     <div>
                       <Label htmlFor='Concepto'>Concepto</Label>
-                      <Controller
+                      <CustomSelect
+                        options={loader.services.conceptos.map((concepto) => ({
+                          label: concepto,
+                          value: concepto,
+                        }))}
                         name='Concepto'
                         control={control}
-                        render={({ field }) => (
-                          <Input
-                            id='Concepto'
-                            placeholder='Concepto'
-                            {...field}
-                          />
-                        )}
                       />
                     </div>
                   </div>
 
                   <div>
                     <Label htmlFor='Repuestos'>Repuestos</Label>
-                    <Controller
+                    <CustomSelect
+                      options={loader.services.repuestos.map((concepto) => ({
+                        label: concepto,
+                        value: concepto,
+                      }))}
                       name='Repuestos'
                       control={control}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger id='Repuestos'>
-                            <SelectValue placeholder='VARIOS' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='repuesto1'>
-                              Repuesto 1
-                            </SelectItem>
-                            <SelectItem value='repuesto2'>
-                              Repuesto 2
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
                     />
                   </div>
 
