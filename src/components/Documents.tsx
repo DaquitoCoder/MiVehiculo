@@ -123,7 +123,7 @@ export default function Documents() {
 
   const onSubmit = async (data: Document) => {
     if (!data.IdVehiculo) {
-      return
+      return;
     }
 
     const object = {
