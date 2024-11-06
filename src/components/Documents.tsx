@@ -92,7 +92,9 @@ export default function Documents() {
   }, [editingDocument, reset]);
 
   useEffect(() => {
-    setValue('IdVehiculo', loader.vehicles[0].Placa);
+    if (loader.vehicles.length > 0) {
+      setValue('IdVehiculo', loader.vehicles[0].Placa);
+    }
   }, [loader.vehicles, setValue]);
 
   const uploadFile = async (file: File) => {
@@ -120,6 +122,10 @@ export default function Documents() {
   };
 
   const onSubmit = async (data: Document) => {
+    if (!data.IdVehiculo) {
+      return
+    }
+
     const object = {
       ...data,
     };
@@ -342,6 +348,7 @@ export default function Documents() {
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
+                        disabled={loader.vehicles.length === 0}
                       >
                         <SelectTrigger id='PlacaVehiculo'>
                           <SelectValue placeholder='TUS PLACAS' />
@@ -357,7 +364,9 @@ export default function Documents() {
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value=''>No hay vehículos</SelectItem>
+                            <SelectItem value='no-vehicles'>
+                              No hay vehículos
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
@@ -501,6 +510,7 @@ export default function Documents() {
                     render={({ field }) => (
                       <Select
                         onValueChange={field.onChange}
+                        disabled={loader.vehicles.length === 0}
                         value={
                           field.value ||
                           (loader.vehicles.length > 0
@@ -522,7 +532,9 @@ export default function Documents() {
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value=''>No hay vehículos</SelectItem>
+                            <SelectItem value='no-vehicles'>
+                              No hay vehículos
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
