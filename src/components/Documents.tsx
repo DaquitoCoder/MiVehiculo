@@ -347,14 +347,18 @@ export default function Documents() {
                           <SelectValue placeholder='TUS PLACAS' />
                         </SelectTrigger>
                         <SelectContent>
-                          {loader.vehicles.map((vehicle) => (
-                            <SelectItem
-                              key={vehicle.Placa}
-                              value={vehicle.Placa}
-                            >
-                              {vehicle.Placa}
-                            </SelectItem>
-                          ))}
+                          {loader.vehicles.length > 0 ? (
+                            loader.vehicles.map((vehicle) => (
+                              <SelectItem
+                                key={vehicle.Placa}
+                                value={vehicle.Placa}
+                              >
+                                {vehicle.Placa}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value=''>No hay vehículos</SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     )}
@@ -427,7 +431,8 @@ export default function Documents() {
                 <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Esta acción no se puede deshacer. Esto eliminará
-                  permanentemente el documento <b>{editingDocument?.NombreDocumento}</b>.
+                  permanentemente el documento{' '}
+                  <b>{editingDocument?.NombreDocumento}</b>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -507,14 +512,18 @@ export default function Documents() {
                           <SelectValue placeholder='TUS PLACAS' />
                         </SelectTrigger>
                         <SelectContent>
-                          {loader.vehicles.map((vehicle) => (
-                            <SelectItem
-                              key={vehicle.Placa}
-                              value={vehicle.Placa}
-                            >
-                              {vehicle.Placa}
-                            </SelectItem>
-                          ))}
+                          {loader.vehicles.length > 0 ? (
+                            loader.vehicles.map((vehicle) => (
+                              <SelectItem
+                                key={vehicle.Placa}
+                                value={vehicle.Placa}
+                              >
+                                {vehicle.Placa}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value=''>No hay vehículos</SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     )}
